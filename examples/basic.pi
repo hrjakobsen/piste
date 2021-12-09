@@ -1,0 +1,14 @@
+channel x : ^[bool] in (
+    x![true]
+    |
+    x?[v] = skip
+)
+
+#extern piste_print(string) : int bound to print in
+#channel x : ^[bool] in (
+#    x![true]
+#    |
+#    x?[v] =
+#        let _ = print(v) in
+#            skip
+#)

@@ -1,0 +1,5 @@
+extern piste_print(1) bound to print in
+    let rec = {a = 1} as test,
+        val = rec : test . a,
+        print(val)
+    in skip

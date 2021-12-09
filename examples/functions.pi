@@ -1,0 +1,12 @@
+extern piste_print(string) : int bound to print in
+    fun add_1(param : int) : int =
+        let added = param + 1
+        in
+            return added
+
+    let a = 1,
+        b = add_1(a),
+        print(b)
+    in
+        skip
+

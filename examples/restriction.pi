@@ -1,0 +1,2 @@
+extern piste_print(string) : int bound to print in
+    let print(2 ** 4) in skip
