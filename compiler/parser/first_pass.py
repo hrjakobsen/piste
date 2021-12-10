@@ -49,6 +49,9 @@ class FreeVariableVisitor(AstVisitor):
 
     def visit_record_node(self, node: RecordNode):
         node.free_variables = []
+        for (ident, val) in node.value:
+            node.free_variables += val.accept(self)
+        node.free_variables = self.sort(set(node.free_variables))
         return node.free_variables
 
     def visit_input_process_node(self, node: InputProcessNode):
