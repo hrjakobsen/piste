@@ -129,6 +129,11 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#identifier_with_type.
+    def visitIdentifier_with_type(self, ctx:pisteParser.Identifier_with_typeContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#paren_expr.
     def visitParen_expr(self, ctx:pisteParser.Paren_exprContext):
         return self.visitChildren(ctx)

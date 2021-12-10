@@ -15,9 +15,9 @@ type_name: INT_T #type_int
 message_type: SQUARE_LEFT type_name (COMMA type_name)* SQUARE_RIGHT;
 
 process: receiver=expression SEND SQUARE_LEFT expression (COMMA expression)* SQUARE_RIGHT #output
-       | expression RECEIVE SQUARE_LEFT IDENTIFIER (COMMA IDENTIFIER)* SQUARE_RIGHT EQ process #input
+       | expression RECEIVE SQUARE_LEFT identifier_with_type (COMMA identifier_with_type)* SQUARE_RIGHT EQ process #input
        | CHANNEL IDENTIFIER COLON type_name IN process #restriction
-       | expression RECEIVE_REPLICATED SQUARE_LEFT  IDENTIFIER (COMMA IDENTIFIER)* SQUARE_RIGHT  EQ process #replicated_input
+       | expression RECEIVE_REPLICATED SQUARE_LEFT  identifier_with_type (COMMA identifier_with_type)* SQUARE_RIGHT  EQ process #replicated_input
        | PAREN_LEFT process PAREN_RIGHT #paren
        | DEF IDENTIFIER SQUARE_LEFT IDENTIFIER (COMMA IDENTIFIER)* SQUARE_RIGHT EQ body=process continuation=process #process_def
        | INACTION #inaction
@@ -28,8 +28,10 @@ process: receiver=expression SEND SQUARE_LEFT expression (COMMA expression)* SQU
        | RETURN expression #return
        | <assoc=right> left=process PARALLEL right=process #parallel;
 
-value_binding: (IDENTIFIER EQ)? expression PAREN_LEFT expression (COMMA expression)*  PAREN_RIGHT #call_binding
-             | IDENTIFIER EQ expression #simple_value_binding;
+value_binding: (identifier_with_type EQ ) ? expression PAREN_LEFT expression (COMMA expression)*  PAREN_RIGHT #call_binding
+             | identifier_with_type EQ expression  #simple_value_binding;
+
+identifier_with_type : IDENTIFIER (COLON type_name)?;
 
 expression: PAREN_LEFT expression PAREN_RIGHT #paren_expr
           | value #literal

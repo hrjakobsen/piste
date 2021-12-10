@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 
 from printer import PrinterVisitor
+from typechecker import TypeCheckerVisitor
 
 PISTE_PATH = Path.home().joinpath(".piste")
 
@@ -15,6 +16,7 @@ PISTE_PATH = Path.home().joinpath(".piste")
 def main():
     decls, ast = (parse_file(sys.argv[1]))
     pass_one(ast)
+    ast.accept(TypeCheckerVisitor(decls))
     print(ast.accept(PrinterVisitor()))
     code = generate_c_code(ast)
     if "--print-c" in sys.argv:

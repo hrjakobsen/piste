@@ -24,7 +24,7 @@ class PrinterVisitor(AstVisitor):
 
     def visit_input_process_node(self, node: InputProcessNode):
         receiver = node.receiver.accept(self)
-        s = self.indent() + receiver + "?" + self.print_list(map(lambda x: x.name, node.identifiers)) + " = \n"
+        s = self.indent() + receiver + "?" + self.print_list(map(lambda x: x.name + ": " + str(x.type), node.identifiers)) + " = \n"
         self.indentation += 1
         s += node.continuation.accept(self)
         self.indentation -= 1
@@ -32,7 +32,7 @@ class PrinterVisitor(AstVisitor):
 
     def visit_replicated_input_process_node(self, node: ReplicatedInputProcessNode):
         receiver = node.receiver.accept(self)
-        s = self.indent() + receiver + "?*" + self.print_list(map(lambda x: x.name, node.identifiers)) + " = \n"
+        s = self.indent() + receiver + "?*" + self.print_list(map(lambda x: x.name + ": " + str(x.type), node.identifiers)) + " = \n"
         self.indentation += 1
         s += node.continuation.accept(self)
         self.indentation -= 1
@@ -46,7 +46,7 @@ class PrinterVisitor(AstVisitor):
         return "{2}(\n{0} \n{2}|\n{1}\n{2})".format(node.left.accept(self), node.right.accept(self), self.indent())
 
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
-        s = self.indent() + "channel " + node.identifier.name + ": " + str(node.channel_type) + " in \n"
+        s = self.indent() + "channel " + node.identifier.name + ": " + str(node.identifier.type) + " in \n"
         self.indentation += 1
         s += node.continuation.accept(self)
         self.indentation -= 1

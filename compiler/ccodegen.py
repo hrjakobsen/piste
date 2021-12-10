@@ -221,12 +221,12 @@ int {name}(closure_t* closure) {{
         node.continuation.accept(self)
 
     def visit_extern_process_node(self, node: ExternProcessNode):
-        self.prototypes.append("extern piste_value {}({});".format(node.external_name.name, ", ".join(["piste_value"] * len(node.arg_types))))
+        self.prototypes.append("extern piste_value {}({});".format(node.external_name.name, ", ".join(["piste_value"] * (len(node.arg_types.message_type.arg_types) - 1))))
         self.prototypes.append("int {}(closure_t* closure);".format(node.name))
 
         arg_list = []
         args = []
-        for i in range(len(node.arg_types)):
+        for i in range(len(node.arg_types.message_type.arg_types) - 1):
             arg_name = "arg_" + str(i)
             arg_list.append(arg_name)
             args.append("    piste_value {} = read_message({});".format(arg_name, node.internal_name.name))

@@ -4,6 +4,10 @@ from parser.core import *
 from typechecker import TypeReference
 
 
+def get_node_pos(ctx: ParserRuleContext):
+    return (ctx.start.line, ctx.start.column), (ctx.stop.line, ctx.stop.column)
+
+
 class CoreBuilder(pisteVisitor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -14,48 +18,49 @@ class CoreBuilder(pisteVisitor):
         messages = []
         for message in ctx.expression()[1:]:
             messages.append(message.accept(self))
-        return OutputProcessNode(receiver, messages)
+        return OutputProcessNode(receiver, messages, code_position=get_node_pos(ctx))
 
     def visitInput(self, ctx: pisteParser.InputContext):
         receiver = ctx.expression().accept(self)
         identifiers = []
-        for identifier in ctx.IDENTIFIER():
-            identifiers.append(Identifier(identifier.getText()))
+        for identifier in ctx.identifier_with_type():
+            identifiers.append(identifier.accept(self))
         continuation = ctx.process().accept(self)
-        return InputProcessNode(receiver, identifiers, continuation)
+        return InputProcessNode(receiver, identifiers, continuation, code_position=get_node_pos(ctx))
 
     def visitParen(self, ctx: pisteParser.ParenContext):
         return ctx.process().accept(self)
 
     def visitInaction(self, ctx: pisteParser.InactionContext):
-        return InactionProcessNode()
+        return InactionProcessNode(code_position=get_node_pos(ctx))
 
     def visitParallel(self, ctx: pisteParser.ParallelContext):
-        return ParallelProcessNode(ctx.left.accept(self), ctx.right.accept(self))
+        return ParallelProcessNode(ctx.left.accept(self), ctx.right.accept(self), code_position=get_node_pos(ctx))
 
     def visitRestriction(self, ctx: pisteParser.RestrictionContext):
         identifier = Identifier(ctx.IDENTIFIER().getText())
         typ = ctx.type_name().accept(self)
         continuation = ctx.process().accept(self)
-        return RestrictionProcessNode(identifier, typ, continuation)
+        return RestrictionProcessNode(identifier, typ, continuation, code_position=get_node_pos(ctx))
 
     def visitTrue_val(self, ctx: pisteParser.True_valContext):
-        return TrueValueNode(type=Type.BOOL)
+        return TrueValueNode(type=Type.BOOL, code_position=get_node_pos(ctx))
 
     def visitRecord_val(self, ctx: pisteParser.Record_valContext):
         return ctx.record().accept(self)
 
     def visitString_val(self, ctx: pisteParser.String_valContext):
-        return StringValueNode(ctx.STRING().getText()[1:-1], type=Type.STRING)
+        return StringValueNode(ctx.STRING().getText()[1:-1], type=Type.STRING, code_position=get_node_pos(ctx))
 
     def visitInt_val(self, ctx: pisteParser.Int_valContext):
-        return IntegerValueNode(ctx.INTEGER().getText(), type=Type.INT)
+        a = ctx.getSourceInterval()
+        return IntegerValueNode(ctx.INTEGER().getText(), type=Type.INT, code_position=get_node_pos(ctx))
 
     def visitFalse_val(self, ctx: pisteParser.False_valContext):
-        return FalseValueNode(type=Type.BOOL)
+        return FalseValueNode(type=Type.BOOL, code_position=get_node_pos(ctx))
 
     def visitIdentifier_val(self, ctx: pisteParser.Identifier_valContext):
-        return IdentifierValueNode(ctx.IDENTIFIER().getText())
+        return IdentifierValueNode(ctx.IDENTIFIER().getText(), code_position=get_node_pos(ctx))
 
     # def visitPath_val(self, ctx: pisteParser.Path_valContext):
     #     return PathNode(ctx.expression().accept(self), IdentifierNode(ctx.IDENTIFIER(1).getText()), IdentifierNode(ctx.IDENTIFIER(0)))
@@ -65,15 +70,15 @@ class CoreBuilder(pisteVisitor):
         for (name, val_node) in zip(ctx.IDENTIFIER()[:-1], ctx.expression()):
             entries.append((name.getText(), val_node.accept(self)))
         type = TypeReference((ctx.IDENTIFIER()[-1].getText()))
-        return RecordNode(entries, type)
+        return RecordNode(entries, type, code_position=get_node_pos(ctx))
 
     def visitReplicated_input(self, ctx:pisteParser.Replicated_inputContext):
         receiver = ctx.expression().accept(self)
         identifiers = []
-        for identifier in ctx.IDENTIFIER():
-            identifiers.append(Identifier(identifier.getText()))
+        for identifier in ctx.identifier_with_type():
+            identifiers.append(identifier.accept(self))
         continuation = ctx.process().accept(self)
-        return ReplicatedInputProcessNode(receiver, identifiers, continuation)
+        return ReplicatedInputProcessNode(receiver, identifiers, continuation, code_position=get_node_pos(ctx))
 
     def visitProcess_def(self, ctx: pisteParser.Process_defContext):
         body = ctx.body.accept(self)
@@ -83,29 +88,32 @@ class CoreBuilder(pisteVisitor):
         return RestrictionProcessNode(
             name,
             ParallelProcessNode(
-                ReplicatedInputProcessNode(IdentifierValueNode(name.name), args, body),
-                continuation)
+                ReplicatedInputProcessNode(IdentifierValueNode(name.name, code_position=get_node_pos(ctx)), args, body),
+                continuation,
+                code_position=get_node_pos(ctx))
         )
 
     def visitConditional(self, ctx: pisteParser.ConditionalContext):
         return ConditionalNode(
             ctx.expression().accept(self),
             ctx.true_branch.accept(self),
-            ctx.false_branch.accept(self) if ctx.false_branch else InactionProcessNode()
+            ctx.false_branch.accept(self) if ctx.false_branch else InactionProcessNode(),
+            code_position=get_node_pos(ctx)
         )
 
     def visitExtern_def(self, ctx:pisteParser.Extern_defContext):
         external_name = Identifier(ctx.IDENTIFIER(0).getText())
         internal_name = Identifier(ctx.IDENTIFIER(1).getText())
         types = [typ.accept(self) for typ in ctx.type_name()[:-1]]
-        ret_type = ctx.type_name()[-1]
+        ret_type = ctx.type_name()[-1].accept(self)
         continuation = ctx.continuation.accept(self)
         return ExternProcessNode(
             external_name,
-            types,
-            ret_type,
+            ChannelType(MessageType(types + [ChannelType(MessageType(ret_type))])),
+            ChannelType(MessageType(ret_type)),
             internal_name,
-            continuation
+            continuation,
+            code_position=get_node_pos(ctx)
         )
 
     def visitLet_binding(self, ctx: pisteParser.Let_bindingContext):
@@ -120,17 +128,21 @@ class CoreBuilder(pisteVisitor):
             next_process = self.generate_binding(
                 decl["type"],
                 decl["variable"],
+                decl["arg_type"],
                 decl["function"],
                 decl["args"],
-                next_process
+                next_process,
+                ctx
             )
 
         return next_process
 
     def visitCall_binding(self, ctx: pisteParser.Call_bindingContext):
+        identifier = ctx.identifier_with_type().accept(self) if ctx.identifier_with_type() else Identifier("_")
         return {
             "type": "FUNCTION",
-            "variable": Identifier(ctx.IDENTIFIER().getText()) if ctx.IDENTIFIER() else Identifier("_"),
+            "variable": identifier,
+            "arg_type": identifier.type,
             "function": ctx.expression(0).accept(self),
             "args": [arg.accept(self) for arg in ctx.expression()[1:]]
         }
@@ -138,22 +150,24 @@ class CoreBuilder(pisteVisitor):
 
     def visitSimple_value_binding(self, ctx: pisteParser.Simple_value_bindingContext):
         # let x = 4
+        identifier = ctx.identifier_with_type().accept(self) if ctx.identifier_with_type() else Identifier("_")
         return {
             "type": "SIMPLE",
-            "variable": Identifier(ctx.IDENTIFIER().getText()),
+            "variable": identifier,
+            "arg_type": identifier.type,
             "function": None,
             "args": [ctx.expression().accept(self)]
         }
 
-    def generate_binding(self, type, variable, channel, args, continuation):
+    def generate_binding(self, type, variable, arg_type, channel, args, continuation, ctx):
         channel_name = "fresh"
         if type == "FUNCTION":
             return RestrictionProcessNode(
-                Identifier(channel_name),
-                args[0].type,
+                Identifier(channel_name, typ=ChannelType(MessageType(variable.type)) if variable.type else None),
+                arg_type,
                 ParallelProcessNode(
-                    OutputProcessNode(channel, args + [IdentifierValueNode(channel_name)]),
-                    InputProcessNode(IdentifierValueNode(channel_name), [variable], continuation)
+                    OutputProcessNode(channel, args + [IdentifierValueNode(channel_name, code_position=get_node_pos(ctx))], code_position=get_node_pos(ctx)),
+                    InputProcessNode(IdentifierValueNode(channel_name, code_position=get_node_pos(ctx)), [variable], continuation, code_position=get_node_pos(ctx))
                 )
             )
         elif type == "SIMPLE":
@@ -162,27 +176,29 @@ class CoreBuilder(pisteVisitor):
                 args[0].type,
                 ParallelProcessNode(
                     OutputProcessNode(IdentifierValueNode(channel_name), args),
-                    InputProcessNode(IdentifierValueNode(channel_name), [variable], continuation)
+                    InputProcessNode(IdentifierValueNode(channel_name, code_position=get_node_pos(ctx)), [variable], continuation)
                 )
             )
 
     def visitReturn(self, ctx: pisteParser.ReturnContext):
         args = [ctx.expression().accept(self)]
-        return OutputProcessNode(IdentifierValueNode("return_chn"), args)
+        return OutputProcessNode(IdentifierValueNode("return_chn"), args, code_position=get_node_pos(ctx))
 
     def visitFunction_def(self, ctx: pisteParser.Function_defContext):
         name = Identifier(ctx.IDENTIFIER(0).getText())
-        args = [Identifier(arg.getText()) for arg in ctx.IDENTIFIER()[1:]]
         arg_types = [typ.accept(self) for typ in ctx.type_name()[:-1]]
+        args = [Identifier(arg.getText(), typ=arg_types[i]) for i, arg in enumerate(ctx.IDENTIFIER()[1:])]
         ret_type = ChannelType(MessageType([ctx.type_name()[-1].accept(self)]))
+        name.type = ChannelType(MessageType(arg_types + [ret_type]))
         body = ctx.body.accept(self)
         continuation = ctx.continuation.accept(self)
         return RestrictionProcessNode(
             name,
             ChannelType(MessageType(arg_types + [ret_type])),
             ParallelProcessNode(
-                ReplicatedInputProcessNode(IdentifierValueNode(name.name), args + [Identifier("return_chn")], body),
-                continuation)
+                ReplicatedInputProcessNode(IdentifierValueNode(name.name), args + [Identifier("return_chn", typ=ret_type)], body),
+                continuation),
+            code_position=get_node_pos(ctx)
         )
 
     def visitParen_expr(self, ctx: pisteParser.Paren_exprContext):
@@ -192,21 +208,24 @@ class CoreBuilder(pisteVisitor):
         return BinaryExpressionNode(
             ctx.expression(0).accept(self),
             ctx.expression(1).accept(self),
-            BinaryExpressionNode.POWER
+            BinaryExpressionNode.POWER,
+            get_node_pos(ctx)
         )
 
     def visitOperator_as_expr(self, ctx: pisteParser.Operator_as_exprContext):
         return BinaryExpressionNode(
             ctx.expression(0).accept(self),
             ctx.expression(1).accept(self),
-            BinaryExpressionNode.ADDITION if ctx.ADD() else BinaryExpressionNode.SUBTRACTION
+            BinaryExpressionNode.ADDITION if ctx.ADD() else BinaryExpressionNode.SUBTRACTION,
+            code_position=get_node_pos(ctx)
         )
 
     def visitOperator_md_expr(self, ctx: pisteParser.Operator_md_exprContext):
         return BinaryExpressionNode(
             ctx.expression(0).accept(self),
             ctx.expression(1).accept(self),
-            BinaryExpressionNode.MULTIPLICATION if ctx.MULT() else BinaryExpressionNode.DIVISION
+            BinaryExpressionNode.MULTIPLICATION if ctx.MULT() else BinaryExpressionNode.DIVISION,
+            code_position=get_node_pos(ctx)
         )
 
     def visitLiteral(self, ctx: pisteParser.LiteralContext):
@@ -251,6 +270,14 @@ class CoreBuilder(pisteVisitor):
     def get_declared_type(self, type_name):
         assert type_name in self.declarations
         return self.declarations[type_name]
+
+    def visitIdentifier_with_type(self, ctx: pisteParser.Identifier_with_typeContext):
+        id = Identifier(ctx.IDENTIFIER().getText())
+        if ctx.type_name():
+            id.type = ctx.type_name().accept(self)
+        return id
+
+
 
 
 

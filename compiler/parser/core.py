@@ -1,8 +1,8 @@
 # The core language
 
 class AstNode:
-    def __init__(self, line_number = None):
-        self.line_number = line_number
+    def __init__(self, code_position = None):
+        self.code_position = code_position
         self.free_variables = list()
 
 
@@ -83,9 +83,10 @@ class StringValueNode(ValueNode):
 
 
 class Identifier:
-    def __init__(self, name, *args, **kwargs):
+    def __init__(self, name, typ=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
+        self.type = typ
 
 
 class IntegerValueNode(ValueNode):
@@ -225,10 +226,24 @@ class StringType(Type):
 
 class MessageType(Type):
     def __init__(self, arg_types):
+        if not isinstance(arg_types, list):
+            arg_types = [arg_types]
         self.arg_types = arg_types
 
     def __str__(self):
         return "[{}]".format(", ".join(map(str, self.arg_types)))
+
+    def is_equal_to(self, other_type):
+        # Check pairwise equality with other channel
+        is_msg_type = isinstance(other_type, MessageType)
+        if not is_msg_type:
+            return False
+        if not len(other_type.arg_types) == len(self.arg_types):
+            return False
+        for typ, other_typ in zip(self.arg_types, other_type.arg_types):
+            if not typ.is_equal_to(other_typ):
+                return False
+        return True
 
 
 class ChannelType(Type):
