@@ -82,6 +82,12 @@ class StringValueNode(ValueNode):
         return visitor.visit_string_value_node(self)
 
 
+class Identifier:
+    def __init__(self, name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = name
+
+
 class IntegerValueNode(ValueNode):
     def __init__(self, value, *args, **kwargs):
         super().__init__(int(value), *args, **kwargs)
@@ -93,6 +99,7 @@ class IntegerValueNode(ValueNode):
 class IdentifierValueNode(ValueNode):
     def __init__(self, identifier, *args, **kwargs):
         super().__init__(identifier, *args, **kwargs)
+        self.identifier_declaration = None
 
     def accept(self, visitor):
         return visitor.visit_identifier_node(self)
@@ -303,7 +310,6 @@ class AstVisitor:
         return node.false_branch.accept(self)
 
     def visit_extern_process_node(self, node: ExternProcessNode):
-        node.external_name.accept(self)
         return node.continuation.accept(self)
 
     def visit_path_node(self, node: PathNode):

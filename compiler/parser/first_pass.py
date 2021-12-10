@@ -2,11 +2,14 @@ from parser.core import *
 
 
 class RenamerVisitor(AstVisitor):
-    def __init__(self):
+    def __init__(self, symbols):
         self.counter = 0
 
-    def next_name(self):
-        name = "proc" + str(self.counter)
+        for symbol in symbols:
+            symbol.name = self.next_name(symbol.name)
+
+    def next_name(self, initial_name="piste_proc"):
+        name = initial_name + "_" + str(self.counter)
         self.counter += 1
         return name
 
@@ -22,8 +25,63 @@ class RenamerVisitor(AstVisitor):
         node.name = self.next_name()
         return super().visit_extern_process_node(node)
 
-    def visit_record_node(self, node: RecordNode):
-        node.name = self.next_name()
+    def visit_identifier_node(self, node: IdentifierValueNode):
+        node.value = node.identifier_declaration.name
+
+
+class DeclarationAnnotatorVisitor(AstVisitor):
+    """
+    This class adds references to IdentifierValueNode
+    to point to the initial variable declaration
+    """
+    def __init__(self):
+        self.symbols = []
+        self.symbol_stack = []
+
+    def visit_identifier_node(self, node: IdentifierValueNode):
+        node.identifier_declaration = self.get_symbol(node.value)
+
+    def visit_input_process_node(self, node: InputProcessNode):
+        node.receiver.accept(self)
+
+        for arg in node.identifiers:
+            self.symbol_stack.append((arg.name, arg))
+            self.symbols.append(arg)
+
+        node.continuation.accept(self)
+
+        for _ in node.identifiers:
+            self.symbol_stack.pop()
+
+    def visit_restriction_process_node(self, node: RestrictionProcessNode):
+        self.symbols.append(node.identifier)
+        self.symbol_stack.append((node.identifier.name, node.identifier))
+        node.continuation.accept(self)
+        self.symbol_stack.pop()
+
+    def visit_replicated_input_process_node(self, node: ReplicatedInputProcessNode):
+        node.receiver.accept(self)
+
+        for arg in node.identifiers:
+            self.symbol_stack.append((arg.name, arg))
+            self.symbols.append(arg)
+
+        node.continuation.accept(self)
+
+        for _ in node.identifiers:
+            self.symbol_stack.pop()
+
+    def visit_extern_process_node(self, node: ExternProcessNode):
+        self.symbols.append(node.internal_name)
+        self.symbol_stack.append((node.internal_name.name, node.internal_name))
+        node.continuation.accept(self)
+        self.symbol_stack.pop()
+
+    def get_symbol(self, id_name):
+        for (name, identifier) in reversed(self.symbol_stack):
+            if name == id_name:
+                return identifier
+        raise Exception("No binder for identifier " + id_name)
 
 
 class FreeVariableVisitor(AstVisitor):
@@ -58,8 +116,7 @@ class FreeVariableVisitor(AstVisitor):
         free_vars = set(node.receiver.accept(self))
         free_vars = set(free_vars) | set(node.continuation.accept(self))
         for identifier in node.identifiers:
-            identifier.accept(self)
-            free_vars -= set(identifier.free_variables)
+            free_vars -= {identifier.name}
         node.free_variables = self.sort(free_vars)
         return node.free_variables
 
@@ -67,8 +124,7 @@ class FreeVariableVisitor(AstVisitor):
         free_vars = set(node.receiver.accept(self))
         free_vars |= set(node.continuation.accept(self))
         for identifier in node.identifiers:
-            identifier.accept(self)
-            free_vars -= set(identifier.free_variables)
+            free_vars -= {identifier.name}
         node.free_variables = self.sort(free_vars)
         return node.free_variables
 
@@ -85,7 +141,7 @@ class FreeVariableVisitor(AstVisitor):
         return node.free_variables
 
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
-        node.free_variables = self.sort(set(node.continuation.accept(self)) - {node.identifier.value})
+        node.free_variables = self.sort(set(node.continuation.accept(self)) - {node.identifier.name})
         return node.free_variables
 
     def visit_inaction_process_node(self, node: InactionProcessNode):
@@ -99,8 +155,7 @@ class FreeVariableVisitor(AstVisitor):
         return node.free_variables
 
     def visit_extern_process_node(self, node: ExternProcessNode):
-        node.external_name.accept(self)
-        node.free_variables = self.sort(set(node.continuation.accept(self)) - set(node.external_name.free_variables))
+        node.free_variables = self.sort(set(node.continuation.accept(self)) - {node.external_name.name})
         return node.free_variables
 
     def visit_path_node(self, node: PathNode):
@@ -116,7 +171,9 @@ class FreeVariableVisitor(AstVisitor):
 
 
 def pass_one(ast):
-    renamer = RenamerVisitor()
+    decl_annotator = DeclarationAnnotatorVisitor()
+    ast.accept(decl_annotator)
+    renamer = RenamerVisitor(decl_annotator.symbols)
     ast.accept(renamer)
     ast.accept(FreeVariableVisitor())
     return ast

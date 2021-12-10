@@ -1,13 +1,13 @@
 from parser.auto.pisteVisitor import pisteVisitor
 from parser.auto.pisteParser import *
 from parser.core import *
+from typechecker import TypeReference
 
 
 class CoreBuilder(pisteVisitor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.declarations = {}
-        self.num = 0
 
     def visitOutput(self, ctx: pisteParser.OutputContext):
         receiver = ctx.receiver.accept(self)
@@ -20,7 +20,7 @@ class CoreBuilder(pisteVisitor):
         receiver = ctx.expression().accept(self)
         identifiers = []
         for identifier in ctx.IDENTIFIER():
-            identifiers.append(IdentifierValueNode(identifier.getText()))
+            identifiers.append(Identifier(identifier.getText()))
         continuation = ctx.process().accept(self)
         return InputProcessNode(receiver, identifiers, continuation)
 
@@ -34,7 +34,7 @@ class CoreBuilder(pisteVisitor):
         return ParallelProcessNode(ctx.left.accept(self), ctx.right.accept(self))
 
     def visitRestriction(self, ctx: pisteParser.RestrictionContext):
-        identifier = IdentifierValueNode(ctx.IDENTIFIER().getText())
+        identifier = Identifier(ctx.IDENTIFIER().getText())
         typ = ctx.type_name().accept(self)
         continuation = ctx.process().accept(self)
         return RestrictionProcessNode(identifier, typ, continuation)
@@ -64,26 +64,26 @@ class CoreBuilder(pisteVisitor):
         entries = []
         for (name, val_node) in zip(ctx.IDENTIFIER()[:-1], ctx.expression()):
             entries.append((name.getText(), val_node.accept(self)))
-        type = IdentifierValueNode(ctx.IDENTIFIER()[-1].getText())
+        type = TypeReference((ctx.IDENTIFIER()[-1].getText()))
         return RecordNode(entries, type)
 
     def visitReplicated_input(self, ctx:pisteParser.Replicated_inputContext):
         receiver = ctx.expression().accept(self)
         identifiers = []
         for identifier in ctx.IDENTIFIER():
-            identifiers.append(IdentifierValueNode(identifier.getText()))
+            identifiers.append(Identifier(identifier.getText()))
         continuation = ctx.process().accept(self)
         return ReplicatedInputProcessNode(receiver, identifiers, continuation)
 
     def visitProcess_def(self, ctx: pisteParser.Process_defContext):
         body = ctx.body.accept(self)
         continuation = ctx.continuation.accept(self)
-        name = IdentifierValueNode(ctx.IDENTIFIER(0).getText())
-        args = list(map(lambda i: IdentifierValueNode(i.getText()), ctx.IDENTIFIER()[1:]))
+        name = Identifier(ctx.IDENTIFIER(0).getText())
+        args = list(map(lambda i: Identifier(i.getText()), ctx.IDENTIFIER()[1:]))
         return RestrictionProcessNode(
             name,
             ParallelProcessNode(
-                ReplicatedInputProcessNode(name, args, body),
+                ReplicatedInputProcessNode(IdentifierValueNode(name.name), args, body),
                 continuation)
         )
 
@@ -95,8 +95,8 @@ class CoreBuilder(pisteVisitor):
         )
 
     def visitExtern_def(self, ctx:pisteParser.Extern_defContext):
-        external_name = IdentifierValueNode(ctx.IDENTIFIER(0).getText())
-        internal_name = IdentifierValueNode(ctx.IDENTIFIER(1).getText())
+        external_name = Identifier(ctx.IDENTIFIER(0).getText())
+        internal_name = Identifier(ctx.IDENTIFIER(1).getText())
         types = [typ.accept(self) for typ in ctx.type_name()[:-1]]
         ret_type = ctx.type_name()[-1]
         continuation = ctx.continuation.accept(self)
@@ -130,7 +130,7 @@ class CoreBuilder(pisteVisitor):
     def visitCall_binding(self, ctx: pisteParser.Call_bindingContext):
         return {
             "type": "FUNCTION",
-            "variable": IdentifierValueNode(ctx.IDENTIFIER().getText()) if ctx.IDENTIFIER() else IdentifierValueNode("_"),
+            "variable": Identifier(ctx.IDENTIFIER().getText()) if ctx.IDENTIFIER() else Identifier("_"),
             "function": ctx.expression(0).accept(self),
             "args": [arg.accept(self) for arg in ctx.expression()[1:]]
         }
@@ -140,30 +140,29 @@ class CoreBuilder(pisteVisitor):
         # let x = 4
         return {
             "type": "SIMPLE",
-            "variable": IdentifierValueNode(ctx.IDENTIFIER().getText()),
+            "variable": Identifier(ctx.IDENTIFIER().getText()),
             "function": None,
             "args": [ctx.expression().accept(self)]
         }
 
     def generate_binding(self, type, variable, channel, args, continuation):
-        channel_name = IdentifierValueNode("fresh_" + str(self.num))
-        self.num += 1
+        channel_name = "fresh"
         if type == "FUNCTION":
             return RestrictionProcessNode(
-                channel_name,
+                Identifier(channel_name),
                 args[0].type,
                 ParallelProcessNode(
-                    OutputProcessNode(channel, args + [channel_name]),
-                    InputProcessNode(channel_name, [variable], continuation)
+                    OutputProcessNode(channel, args + [IdentifierValueNode(channel_name)]),
+                    InputProcessNode(IdentifierValueNode(channel_name), [variable], continuation)
                 )
             )
         elif type == "SIMPLE":
             return RestrictionProcessNode(
-                channel_name,
+                Identifier(channel_name),
                 args[0].type,
                 ParallelProcessNode(
-                    OutputProcessNode(channel_name, args),
-                    InputProcessNode(channel_name, [variable], continuation)
+                    OutputProcessNode(IdentifierValueNode(channel_name), args),
+                    InputProcessNode(IdentifierValueNode(channel_name), [variable], continuation)
                 )
             )
 
@@ -172,8 +171,8 @@ class CoreBuilder(pisteVisitor):
         return OutputProcessNode(IdentifierValueNode("return_chn"), args)
 
     def visitFunction_def(self, ctx: pisteParser.Function_defContext):
-        name = IdentifierValueNode(ctx.IDENTIFIER(0).getText())
-        args = [IdentifierValueNode(arg.getText()) for arg in ctx.IDENTIFIER()[1:]]
+        name = Identifier(ctx.IDENTIFIER(0).getText())
+        args = [Identifier(arg.getText()) for arg in ctx.IDENTIFIER()[1:]]
         arg_types = [typ.accept(self) for typ in ctx.type_name()[:-1]]
         ret_type = ChannelType(MessageType([ctx.type_name()[-1].accept(self)]))
         body = ctx.body.accept(self)
@@ -182,7 +181,7 @@ class CoreBuilder(pisteVisitor):
             name,
             ChannelType(MessageType(arg_types + [ret_type])),
             ParallelProcessNode(
-                ReplicatedInputProcessNode(name, args + [IdentifierValueNode("return_chn")], body),
+                ReplicatedInputProcessNode(IdentifierValueNode(name.name), args + [Identifier("return_chn")], body),
                 continuation)
         )
 

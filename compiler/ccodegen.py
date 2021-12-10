@@ -21,7 +21,7 @@ class BodyVisitor(AstVisitor):
         for (name, val) in node.value:
             record_content.append(".{} = {}".format(name, val.accept(self)))
         return "((piste_value){{ .type = RECORD, .value = (long)&((struct {record_name}) {{ {record_content} }}) }})".format(
-            record_name=node.type.value,
+            record_name=node.type.name,
             record_content=", ".join(record_content)
         )
 
@@ -29,7 +29,7 @@ class BodyVisitor(AstVisitor):
         return "(((struct {type}*)({value}.value))->{field_name})".format(
             type=node.type.value,
             value=node.value.accept(self),
-            field_name=node.field_name.value
+            field_name=node.field_name.name
         )
 
     def visit_identifier_node(self, node: IdentifierValueNode):
@@ -84,7 +84,7 @@ class BodyVisitor(AstVisitor):
         return "{}\n{}".format(node.left.accept(self), node.right.accept(self))
 
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
-        return "    piste_value {} = alloc_channel();\n{}".format(node.identifier.value, node.continuation.accept(self))
+        return "    piste_value {} = alloc_channel();\n{}".format(node.identifier.name, node.continuation.accept(self))
 
     def visit_inaction_process_node(self, node: InactionProcessNode):
         return "/* inaction */"
@@ -114,7 +114,7 @@ class BodyVisitor(AstVisitor):
             num_free_variables=0,
             process_name=node.name,
             free_var_initialization="\n".join(free_var_initialization),
-            channel=node.internal_name.accept(self)
+            channel=node.internal_name.name
         ) + node.continuation.accept(self)
 
     def visit_binary_expression_node(self, node: BinaryExpressionNode):
@@ -150,8 +150,8 @@ class DeclarationVisitor(AstVisitor):
 
         free_variables_str = "\n".join(free_var_decls) + "\n"
         received_messages = []
-        for name in node.identifiers:
-            received_messages.append("        piste_value {} = read_message({});".format(name.value, node.receiver.value))
+        for identifier in node.identifiers:
+            received_messages.append("        piste_value {} = read_message({});".format(identifier.name, node.receiver.value))
         self.prototypes.append("int {}(closure_t* closure);".format(node.name))
         self.declarations.append({
             "name": node.name,
@@ -176,8 +176,6 @@ int {name}(closure_t* closure) {{
                    process_name=node.name,
                    received_messages="\n".join(received_messages),
                    free_var_initialization="\n".join(free_var_initialization))})
-        for identifier in node.identifiers:
-            identifier.accept(self)
         node.continuation.accept(self)
 
     def visit_replicated_input_process_node(self, node: ReplicatedInputProcessNode):
@@ -193,8 +191,8 @@ int {name}(closure_t* closure) {{
 
         free_variables_str = "\n".join(free_var_decls) + "\n"
         received_messages = []
-        for name in node.identifiers:
-            received_messages.append("        piste_value {} = read_message({});".format(name.value, node.receiver.value))
+        for identifier in node.identifiers:
+            received_messages.append("        piste_value {} = read_message({});".format(identifier.name, node.receiver.value))
 
         self.prototypes.append("int {}(closure_t* closure);".format(node.name))
         self.declarations.append({
@@ -220,14 +218,10 @@ int {name}(closure_t* closure) {{
                    num_free_variables=len(node.free_variables),
                    process_name=node.name,
                    free_var_initialization="\n".join(free_var_initialization))})
-        for identifier in node.identifiers:
-            identifier.accept(self)
         node.continuation.accept(self)
 
     def visit_extern_process_node(self, node: ExternProcessNode):
-        node.external_name.accept(self)
-        node.internal_name.accept(self)
-        self.prototypes.append("extern piste_value {}({});".format(node.external_name.value, ", ".join(["piste_value"] * len(node.arg_types))))
+        self.prototypes.append("extern piste_value {}({});".format(node.external_name.name, ", ".join(["piste_value"] * len(node.arg_types))))
         self.prototypes.append("int {}(closure_t* closure);".format(node.name))
 
         arg_list = []
@@ -235,7 +229,7 @@ int {name}(closure_t* closure) {{
         for i in range(len(node.arg_types)):
             arg_name = "arg_" + str(i)
             arg_list.append(arg_name)
-            args.append("    piste_value {} = read_message({});".format(arg_name, node.internal_name.value))
+            args.append("    piste_value {} = read_message({});".format(arg_name, node.internal_name.name))
 
         self.declarations.append({"name": node.name, "body": """
 int {process_name}(closure_t* closure) {{
@@ -249,10 +243,10 @@ int {process_name}(closure_t* closure) {{
 }}
         """.format(
             process_name=node.name,
-            piste_name=node.internal_name.value,
+            piste_name=node.internal_name.name,
             arguments="\n".join(args),
-            channel_name=node.internal_name.value,
-            external_name=node.external_name.value,
+            channel_name=node.internal_name.name,
+            external_name=node.external_name.name,
             arg_list=", ".join(arg_list)
         )})
 

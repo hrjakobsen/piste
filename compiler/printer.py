@@ -24,7 +24,7 @@ class PrinterVisitor(AstVisitor):
 
     def visit_input_process_node(self, node: InputProcessNode):
         receiver = node.receiver.accept(self)
-        s = self.indent() + receiver + "?" + self.print_list(map(lambda x: x.value, node.identifiers)) + " = \n"
+        s = self.indent() + receiver + "?" + self.print_list(map(lambda x: x.name, node.identifiers)) + " = \n"
         self.indentation += 1
         s += node.continuation.accept(self)
         self.indentation -= 1
@@ -32,7 +32,7 @@ class PrinterVisitor(AstVisitor):
 
     def visit_replicated_input_process_node(self, node: ReplicatedInputProcessNode):
         receiver = node.receiver.accept(self)
-        s = self.indent() + receiver + "?*" + self.print_list(map(lambda x: x.value, node.identifiers)) + " = \n"
+        s = self.indent() + receiver + "?*" + self.print_list(map(lambda x: x.name, node.identifiers)) + " = \n"
         self.indentation += 1
         s += node.continuation.accept(self)
         self.indentation -= 1
@@ -46,7 +46,7 @@ class PrinterVisitor(AstVisitor):
         return "{2}(\n{0} \n{2}|\n{1}\n{2})".format(node.left.accept(self), node.right.accept(self), self.indent())
 
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
-        s = self.indent() + "channel " + node.identifier.value + ": " + str(node.channel_type) + " in \n"
+        s = self.indent() + "channel " + node.identifier.name + ": " + str(node.channel_type) + " in \n"
         self.indentation += 1
         s += node.continuation.accept(self)
         self.indentation -= 1
@@ -72,19 +72,19 @@ class PrinterVisitor(AstVisitor):
         cont = node.continuation.accept(self)
         self.indentation -= 1
         return "{3}extern {1}({0}) in\n{2}".format(
-            node.external_name.value,
-            node.internal_name.value,
+            node.external_name.name,
+            node.internal_name.name,
             cont,
             self.indent()
         )
 
     def visit_record_node(self, node: RecordNode):
-        return "{ " + ", ".join(map(lambda x: "."+ x[0] + " = " + x[1].accept(self), node.value)) + " }"
+        return "{ " + ", ".join(map(lambda x: "."+ x[0] + " = " + x[1].accept(self), node.name)) + " }"
 
     def visit_path_node(self, node: PathNode):
         return "{}.{}".format(
             node.value.accept(self),
-            node.field_name.value
+            node.field_name.name
         )
 
     def visit_binary_expression_node(self, node: BinaryExpressionNode):
