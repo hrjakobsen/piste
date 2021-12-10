@@ -90,7 +90,7 @@ class IntegerValueNode(ValueNode):
         return visitor.visit_integer_value_node(self)
 
 
-class IdentifierNode(ValueNode):
+class IdentifierValueNode(ValueNode):
     def __init__(self, identifier, *args, **kwargs):
         super().__init__(identifier, *args, **kwargs)
 
@@ -268,7 +268,7 @@ class AstVisitor:
     def visit_integer_value_node(self, node: IntegerValueNode):
         return
 
-    def visit_identifier_node(self, node: IdentifierNode):
+    def visit_identifier_node(self, node: IdentifierValueNode):
         return
 
     def visit_record_node(self, node: RecordNode):

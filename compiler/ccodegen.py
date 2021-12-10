@@ -1,5 +1,5 @@
 from parser.core import AstVisitor, RestrictionProcessNode, InputProcessNode, TrueValueNode, FalseValueNode, \
-    StringValueNode, IntegerValueNode, IdentifierNode, OutputProcessNode, ParallelProcessNode, InactionProcessNode, \
+    StringValueNode, IntegerValueNode, IdentifierValueNode, OutputProcessNode, ParallelProcessNode, InactionProcessNode, \
     ReplicatedInputProcessNode, ConditionalNode, ExternProcessNode, RecordNode, PathNode, BinaryExpressionNode
 
 
@@ -32,7 +32,7 @@ class BodyVisitor(AstVisitor):
             field_name=node.field_name.value
         )
 
-    def visit_identifier_node(self, node: IdentifierNode):
+    def visit_identifier_node(self, node: IdentifierValueNode):
         return str(node.value)
 
     def visit_input_process_node(self, node: InputProcessNode):

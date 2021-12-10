@@ -43,7 +43,7 @@ class FreeVariableVisitor(AstVisitor):
         node.free_variables = []
         return node.free_variables
 
-    def visit_identifier_node(self, node: IdentifierNode):
+    def visit_identifier_node(self, node: IdentifierValueNode):
         node.free_variables = [node.value]
         return node.free_variables
 
