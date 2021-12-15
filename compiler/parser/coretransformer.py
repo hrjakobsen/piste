@@ -40,6 +40,7 @@ class CoreBuilder(pisteVisitor):
     def visitRestriction(self, ctx: pisteParser.RestrictionContext):
         identifier = Identifier(ctx.IDENTIFIER().getText())
         typ = ctx.type_name().accept(self)
+        identifier.type = typ
         continuation = ctx.process().accept(self)
         return RestrictionProcessNode(identifier, typ, continuation, code_position=get_node_pos(ctx))
 

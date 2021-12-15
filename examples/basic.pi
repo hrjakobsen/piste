@@ -3,6 +3,6 @@ channel x : ^[bool] in (
     x![true]
     |
     x?[v : bool] =
-        let a : int = print(v) in
-            skip
+        channel fresh : ^[int] in
+            print![v, fresh]
 )

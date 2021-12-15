@@ -139,3 +139,6 @@ class TypeCheckerVisitor(AstVisitor):
             return
         return super().visit_binary_expression_node(node)
 
+    def visit_restriction_process_node(self, node: RestrictionProcessNode):
+        node.identifier.type = node.channel_type
+
