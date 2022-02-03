@@ -246,10 +246,17 @@ class CoreBuilder(pisteVisitor):
     def visitLiteral(self, ctx: pisteParser.LiteralContext):
         return ctx.value().accept(self)
 
+    def visitImport_statement(self, ctx: pisteParser.Import_statementContext):
+        return ctx.STRING().getText()[1:-1]
+
     def visitProgram(self, ctx: pisteParser.ProgramContext):
+        imports = [import_entry.accept(self) for import_entry in ctx.import_statement()]
         declarations = [decl.accept(self) for decl in ctx.declaration()]
-        process = ctx.process().accept(self)
-        return (process, declarations)
+        if ctx.process():
+            process = ctx.process().accept(self)
+        else:
+            process = None
+        return process, declarations, imports
 
     def visitDeclaration(self, ctx: pisteParser.DeclarationContext):
         # visit the singular child

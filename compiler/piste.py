@@ -13,7 +13,6 @@ from typechecker import TypeCheckerVisitor
 
 PISTE_PATH = Path.home().joinpath(".piste")
 
-
 def add_decls(ast, decls):
     if len(decls) == 0:
         return ast
@@ -32,8 +31,17 @@ def add_decls(ast, decls):
     return extended
 
 
+def import_file(name):
+    _ast, decls, imports = parse_file(name)
+    for imp in imports:
+        decls = import_file(imp) + decls
+    return decls
+
+
 def main():
-    ast, decls = (parse_file(sys.argv[1]))
+    ast, decls, imports = (parse_file(sys.argv[1]))
+    for imp in imports:
+        decls = import_file(imp) + decls
     ast = add_decls(ast, decls)
     pass_one(ast)
     if "--skip-typechecking" not in sys.argv:

@@ -1,6 +1,8 @@
 grammar piste;
 
-program: declaration* process;
+program: import_statement* declaration* process?;
+
+import_statement: IMPORT STRING;
 
 declaration: record_declaration
            | extern_declaration;
@@ -74,6 +76,7 @@ ELSE: 'else';
 THEN: 'then';
 EQ: '=';
 DEF: 'def';
+IMPORT: 'import';
 FUN: 'fun';
 COMMA: ',';
 SEND: '!';

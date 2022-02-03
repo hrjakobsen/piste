@@ -1,0 +1,1 @@
+extern piste_print(string) : void bound to print

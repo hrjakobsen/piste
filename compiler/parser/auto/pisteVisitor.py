@@ -14,6 +14,11 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#import_statement.
+    def visitImport_statement(self, ctx:pisteParser.Import_statementContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#declaration.
     def visitDeclaration(self, ctx:pisteParser.DeclarationContext):
         return self.visitChildren(ctx)
