@@ -197,6 +197,14 @@ class InactionProcessNode(ProcessNode):
         return visitor.visit_inaction_process_node(self)
 
 
+class ExternalDeclaration:
+    def __init__(self, external_name, arg_types, ret_type, internal_name):
+        self.external_name = external_name
+        self.arg_types = arg_types
+        self.ret_type = ret_type
+        self.internal_name = internal_name
+
+
 class Type:
     INT = "INT_T"
     BOOL = "BOOL_T"

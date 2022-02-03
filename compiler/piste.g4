@@ -2,7 +2,12 @@ grammar piste;
 
 program: declaration* process;
 
-declaration: record_declaration;
+declaration: record_declaration
+           | extern_declaration;
+
+extern_declaration:
+    EXTERN IDENTIFIER PAREN_LEFT type_name (COMMA type_name)* PAREN_RIGHT COLON type_name BOUND TO IDENTIFIER;
+
 
 record_declaration: RECORD IDENTIFIER BRACE_LEFT IDENTIFIER COLON type_name (COMMA IDENTIFIER COLON type_name)* BRACE_RIGHT;
 

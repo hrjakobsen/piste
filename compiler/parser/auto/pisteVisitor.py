@@ -19,6 +19,11 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#extern_declaration.
+    def visitExtern_declaration(self, ctx:pisteParser.Extern_declarationContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#record_declaration.
     def visitRecord_declaration(self, ctx:pisteParser.Record_declarationContext):
         return self.visitChildren(ctx)

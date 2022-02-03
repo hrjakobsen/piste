@@ -102,6 +102,20 @@ class CoreBuilder(pisteVisitor):
             code_position=get_node_pos(ctx)
         )
 
+    def visitExtern_declaration(self, ctx: pisteParser.Extern_declarationContext):
+        external_name = Identifier(ctx.IDENTIFIER(0).getText())
+        internal_name = Identifier(ctx.IDENTIFIER(1).getText())
+        types = [typ.accept(self) for typ in ctx.type_name()[:-1]]
+        ret_type = ctx.type_name()[-1].accept(self)
+        decl = ExternalDeclaration(
+            external_name,
+            ChannelType(MessageType(types + [ChannelType(MessageType(ret_type))])),
+            ChannelType(MessageType(ret_type)),
+            internal_name
+        )
+        self.declarations[internal_name] = decl
+        return decl
+
     def visitExtern_def(self, ctx:pisteParser.Extern_defContext):
         external_name = Identifier(ctx.IDENTIFIER(0).getText())
         internal_name = Identifier(ctx.IDENTIFIER(1).getText())
@@ -235,7 +249,7 @@ class CoreBuilder(pisteVisitor):
     def visitProgram(self, ctx: pisteParser.ProgramContext):
         declarations = [decl.accept(self) for decl in ctx.declaration()]
         process = ctx.process().accept(self)
-        return (declarations, process)
+        return (process, declarations)
 
     def visitDeclaration(self, ctx: pisteParser.DeclarationContext):
         # visit the singular child
