@@ -7,11 +7,13 @@ from parser.parser import parse_file
 import sys
 import tempfile
 from pathlib import Path
+from os.path import abspath, exists, realpath, dirname, join
 
 from printer import PrinterVisitor
 from typechecker import TypeCheckerVisitor
 
 PISTE_PATH = Path.home().joinpath(".piste")
+
 
 def add_decls(ast, decls):
     if len(decls) == 0:
@@ -31,17 +33,34 @@ def add_decls(ast, decls):
     return extended
 
 
-def import_file(name):
-    _ast, decls, imports = parse_file(name)
+def find_file(name, executable_path):
+    if not name.endswith(".pi"):
+        name += ".pi"
+    search_paths = [
+        dirname(realpath(executable_path)),
+        join(PISTE_PATH, "lib")
+    ]
+
+    for path in search_paths:
+        abs_path = abspath(join(path, name))
+        if exists(abs_path):
+            return abs_path
+    raise Exception("Couldn't find file '{}'. Looked in \n    -{}.".format(name, ",\n    -".join(search_paths)))
+
+
+def import_file(name, executable_path):
+    file_path = find_file(name, executable_path)
+    _ast, decls, imports = parse_file(file_path)
     for imp in imports:
         decls = import_file(imp) + decls
     return decls
 
 
 def main():
-    ast, decls, imports = (parse_file(sys.argv[1]))
+    file_path = sys.argv[1]
+    ast, decls, imports = (parse_file(file_path))
     for imp in imports:
-        decls = import_file(imp) + decls
+        decls = import_file(imp, file_path) + decls
     ast = add_decls(ast, decls)
     pass_one(ast)
     if "--skip-typechecking" not in sys.argv:
