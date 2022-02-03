@@ -34,6 +34,11 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#type_void.
+    def visitType_void(self, ctx:pisteParser.Type_voidContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#type_string.
     def visitType_string(self, ctx:pisteParser.Type_stringContext):
         return self.visitChildren(ctx)

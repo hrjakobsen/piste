@@ -198,9 +198,10 @@ class InactionProcessNode(ProcessNode):
 
 
 class Type:
-    INT = None
-    BOOL = None
-    STRING = None
+    INT = "INT_T"
+    BOOL = "BOOL_T"
+    STRING = "STRING_T"
+    VOID = "VOID_T"
 
     def is_equal_to(self, other_type):
         return self == other_type

@@ -8,6 +8,7 @@ record_declaration: RECORD IDENTIFIER BRACE_LEFT IDENTIFIER COLON type_name (COM
 
 type_name: INT_T #type_int
          | BOOL_T #type_bool
+         | VOID_T #type_void
          | STRING_T #type_string
          | CARET message_type #type_channel
          | IDENTIFIER #type_identifier;
@@ -91,6 +92,7 @@ RECORD: 'record';
 INT_T : 'int';
 BOOL_T: 'bool';
 STRING_T : 'string';
+VOID_T : 'void';
 
 STRING: '"' (~'"')* '"';
 INTEGER: '-'?[1-9][0-9]*;

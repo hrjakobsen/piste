@@ -11,6 +11,7 @@ enum piste_value_t {
     CHANNEL,
     STRING,
     RECORD,
+    VOID,
 };
 
 typedef enum piste_value_t piste_value_t;
@@ -22,7 +23,10 @@ struct piste_value {
     piste_int_t value;
 };
 
+
 typedef struct piste_value piste_value;
+
+static const piste_value UNIT = (piste_value) {.type = VOID, .value = 0 };
 
 struct channel_node {
     struct channel_node* next;

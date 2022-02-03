@@ -256,6 +256,9 @@ class CoreBuilder(pisteVisitor):
     def visitType_bool(self, ctx: pisteParser.Type_boolContext):
         return Type.BOOL
 
+    def visitType_void(self, ctx: pisteParser.Type_voidContext):
+        return Type.VOID
+
     def visitType_string(self, ctx: pisteParser.Type_stringContext):
         return Type.STRING
 

@@ -1,0 +1,3 @@
+extern piste_print(string) : void bound to print in
+    let _ : void = print("Hello, World!") in
+        skip
