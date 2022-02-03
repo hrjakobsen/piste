@@ -1,4 +1,4 @@
-import "../examples/std.pi"
+import "std.pi"
 
-channel fresh : ^[string, ^[void]] in
-    print!["Hello world!", fresh]
+let _ : void = print("Hello world") in
+    skip
