@@ -179,7 +179,7 @@ class CoreBuilder(pisteVisitor):
         if type == "FUNCTION":
             return RestrictionProcessNode(
                 Identifier(channel_name, typ=ChannelType(MessageType(variable.type)) if variable.type else None),
-                arg_type,
+                ChannelType(MessageType(arg_type)),
                 ParallelProcessNode(
                     OutputProcessNode(channel, args + [IdentifierValueNode(channel_name, code_position=get_node_pos(ctx))], code_position=get_node_pos(ctx)),
                     InputProcessNode(IdentifierValueNode(channel_name, code_position=get_node_pos(ctx)), [variable], continuation, code_position=get_node_pos(ctx))

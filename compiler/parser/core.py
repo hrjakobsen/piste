@@ -206,10 +206,10 @@ class ExternalDeclaration:
 
 
 class Type:
-    INT = "INT_T"
-    BOOL = "BOOL_T"
-    STRING = "STRING_T"
-    VOID = "VOID_T"
+    INT = None
+    BOOL = None
+    STRING = None
+    VOID = None
 
     def is_equal_to(self, other_type):
         return self == other_type
@@ -231,6 +231,11 @@ class BoolType(Type):
 class StringType(Type):
     def __str__(self):
         return "string"
+
+
+class VoidType(Type):
+    def __str__(self):
+        return "void"
 
 
 class MessageType(Type):
@@ -284,6 +289,7 @@ class RecordType(Type):
 Type.INT = IntegerType()
 Type.BOOL = BoolType()
 Type.STRING = StringType()
+Type.VOID = VoidType()
 
 
 class AstVisitor:

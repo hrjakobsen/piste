@@ -63,9 +63,10 @@ def main():
         decls = import_file(imp, file_path) + decls
     ast = add_decls(ast, decls)
     pass_one(ast)
+    print(ast.accept(PrinterVisitor()))
+
     if "--skip-typechecking" not in sys.argv:
         ast.accept(TypeCheckerVisitor(decls))
-    print(ast.accept(PrinterVisitor()))
     code = generate_c_code(ast)
     if "--print-c" in sys.argv:
         print(code)
