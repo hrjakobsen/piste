@@ -69,26 +69,6 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by pisteParser#process_def.
-    def visitProcess_def(self, ctx:pisteParser.Process_defContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by pisteParser#inaction.
-    def visitInaction(self, ctx:pisteParser.InactionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by pisteParser#conditional.
-    def visitConditional(self, ctx:pisteParser.ConditionalContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by pisteParser#extern_def.
-    def visitExtern_def(self, ctx:pisteParser.Extern_defContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by pisteParser#output.
     def visitOutput(self, ctx:pisteParser.OutputContext):
         return self.visitChildren(ctx)
@@ -114,8 +94,23 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#process_def.
+    def visitProcess_def(self, ctx:pisteParser.Process_defContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#let_binding.
     def visitLet_binding(self, ctx:pisteParser.Let_bindingContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by pisteParser#inaction.
+    def visitInaction(self, ctx:pisteParser.InactionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by pisteParser#conditional.
+    def visitConditional(self, ctx:pisteParser.ConditionalContext):
         return self.visitChildren(ctx)
 
 

@@ -30,7 +30,6 @@ process: receiver=expression SEND SQUARE_LEFT expression (COMMA expression)* SQU
        | DEF IDENTIFIER SQUARE_LEFT IDENTIFIER (COMMA IDENTIFIER)* SQUARE_RIGHT EQ body=process continuation=process #process_def
        | INACTION #inaction
        | IF expression THEN true_branch=process (ELSE false_branch=process)? #conditional
-       | EXTERN IDENTIFIER PAREN_LEFT type_name (COMMA type_name)* PAREN_RIGHT COLON type_name BOUND TO IDENTIFIER IN continuation=process #extern_def
        | LET value_binding (COMMA value_binding)* IN process #let_binding
        | FUN IDENTIFIER PAREN_LEFT IDENTIFIER COLON type_name (COMMA IDENTIFIER COLON type_name)* PAREN_RIGHT COLON type_name EQ body=process continuation=process #function_def
        | RETURN expression #return
