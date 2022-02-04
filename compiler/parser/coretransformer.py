@@ -84,10 +84,12 @@ class CoreBuilder(pisteVisitor):
     def visitProcess_def(self, ctx: pisteParser.Process_defContext):
         body = ctx.body.accept(self)
         continuation = ctx.continuation.accept(self)
-        name = Identifier(ctx.IDENTIFIER(0).getText())
-        args = list(map(lambda i: Identifier(i.getText()), ctx.IDENTIFIER()[1:]))
+        name = Identifier(ctx.IDENTIFIER().getText())
+        args = [i.accept(self) for i in ctx.identifier_with_type()]
+        arg_types = list(map(lambda x: x.type, args))
         return RestrictionProcessNode(
             name,
+            ChannelType(MessageType(arg_types)),
             ParallelProcessNode(
                 ReplicatedInputProcessNode(IdentifierValueNode(name.name, code_position=get_node_pos(ctx)), args, body),
                 continuation,

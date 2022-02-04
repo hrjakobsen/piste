@@ -27,7 +27,7 @@ process: receiver=expression SEND SQUARE_LEFT expression (COMMA expression)* SQU
        | CHANNEL IDENTIFIER COLON type_name IN process #restriction
        | expression RECEIVE_REPLICATED SQUARE_LEFT  identifier_with_type (COMMA identifier_with_type)* SQUARE_RIGHT  EQ process #replicated_input
        | PAREN_LEFT process PAREN_RIGHT #paren
-       | DEF IDENTIFIER SQUARE_LEFT IDENTIFIER (COMMA IDENTIFIER)* SQUARE_RIGHT EQ body=process continuation=process #process_def
+       | DEF IDENTIFIER SQUARE_LEFT identifier_with_type (COMMA identifier_with_type)* SQUARE_RIGHT EQ body=process continuation=process #process_def
        | INACTION #inaction
        | IF expression THEN true_branch=process (ELSE false_branch=process)? #conditional
        | LET value_binding (COMMA value_binding)* IN process #let_binding

@@ -3,6 +3,7 @@
 //
 #include "piste_std.h"
 #include <stdio.h>
+#include <malloc.h>
 
 piste_value piste_print(piste_value val) {
     switch (val.type) {
@@ -20,6 +21,9 @@ piste_value piste_print(piste_value val) {
             break;
         case RECORD:
             printf("record (0x%lx)\n", val.value);
+            break;
+        case VOID:
+            printf("void\n");
     }
     return (piste_value) {
         .type = BOOL,
@@ -31,3 +35,8 @@ piste_value piste_add(piste_value v1, piste_value v2) {
     return (piste_value) { .type= INT, .value = v1.value + v2.value };
 }
 
+piste_value piste_int_to_string(piste_value number) {
+    char* buf = (char*)malloc(16);
+    sprintf(buf, "%ld", number.value);
+    return (piste_value) {.type = STRING, .value = (piste_int_t) buf};
+}

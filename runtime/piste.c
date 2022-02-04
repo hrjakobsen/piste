@@ -151,14 +151,12 @@ int main(int argc, char** argv) {
             unblock_processes();
         }
     }
+    printf("done");
 }
 
 void spawn_readers() {
-    replicated_reader_t* cur = REPLICATED_READERS_HEAD;
-    if (cur == NULL) {
-        return;
-    }
-    while (cur != NULL) {
+    for (replicated_reader_t* cur = REPLICATED_READERS_HEAD; cur != NULL; cur = cur->next) {
+        piste_channel* chn = (piste_channel*) cur->channel.value;
         if (has_message(cur->channel)) {
             // We should spawn a reader
             queue_process(copy_closure(cur->closure));
@@ -166,7 +164,6 @@ void spawn_readers() {
             move_replicated_reader_to_end(cur);
             return;
         }
-        cur = cur->next;
     }
 }
 
@@ -174,21 +171,25 @@ void move_replicated_reader_to_end(replicated_reader_t *reader) {
     if (REPLICATED_READERS_END == NULL || REPLICATED_READERS_END == reader) {
         return;
     }
-    if (reader->previous == NULL) {
+    if (REPLICATED_READERS_HEAD == reader) {
         // We are the first element
         if (reader->next == NULL) {
             // We are the *only* element
             return;
         }
         reader->next->previous = NULL;
+        reader->previous = REPLICATED_READERS_END;
         REPLICATED_READERS_END->next = reader;
+        REPLICATED_READERS_HEAD = reader->next;
         reader->next = NULL;
+        REPLICATED_READERS_END = reader;
     } else {
         // We are in the middle
         reader->previous->next = reader->next;
         reader->next->previous = reader->previous;
+        reader->previous = REPLICATED_READERS_END;
         reader->next = NULL;
-        reader->next = REPLICATED_READERS_END;
+        REPLICATED_READERS_END->next = reader;
         REPLICATED_READERS_END = reader;
     }
 }

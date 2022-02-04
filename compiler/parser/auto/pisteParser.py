@@ -80,38 +80,38 @@ def serializedATN():
         buf.write("\20\t\13\u009b\u00de\3\2\2\2\u009c\u009d\7\36\2\2\u009d")
         buf.write("\u009e\5\20\t\2\u009e\u009f\7\37\2\2\u009f\u00de\3\2\2")
         buf.write("\2\u00a0\u00a1\7\24\2\2\u00a1\u00a2\7/\2\2\u00a2\u00a3")
-        buf.write("\7\"\2\2\u00a3\u00a8\7/\2\2\u00a4\u00a5\7\27\2\2\u00a5")
-        buf.write("\u00a7\7/\2\2\u00a6\u00a4\3\2\2\2\u00a7\u00aa\3\2\2\2")
-        buf.write("\u00a8\u00a6\3\2\2\2\u00a8\u00a9\3\2\2\2\u00a9\u00ab\3")
-        buf.write("\2\2\2\u00aa\u00a8\3\2\2\2\u00ab\u00ac\7#\2\2\u00ac\u00ad")
-        buf.write("\7\23\2\2\u00ad\u00ae\5\20\t\2\u00ae\u00af\5\20\t\t\u00af")
-        buf.write("\u00de\3\2\2\2\u00b0\u00de\7\'\2\2\u00b1\u00b2\7\20\2")
-        buf.write("\2\u00b2\u00b3\5\26\f\2\u00b3\u00b4\7\22\2\2\u00b4\u00b7")
-        buf.write("\5\20\t\2\u00b5\u00b6\7\21\2\2\u00b6\u00b8\5\20\t\2\u00b7")
-        buf.write("\u00b5\3\2\2\2\u00b7\u00b8\3\2\2\2\u00b8\u00de\3\2\2\2")
-        buf.write("\u00b9\u00ba\7\f\2\2\u00ba\u00bf\5\22\n\2\u00bb\u00bc")
-        buf.write("\7\27\2\2\u00bc\u00be\5\22\n\2\u00bd\u00bb\3\2\2\2\u00be")
-        buf.write("\u00c1\3\2\2\2\u00bf\u00bd\3\2\2\2\u00bf\u00c0\3\2\2\2")
-        buf.write("\u00c0\u00c2\3\2\2\2\u00c1\u00bf\3\2\2\2\u00c2\u00c3\7")
-        buf.write("\34\2\2\u00c3\u00c4\5\20\t\6\u00c4\u00de\3\2\2\2\u00c5")
-        buf.write("\u00c6\7\26\2\2\u00c6\u00c7\7/\2\2\u00c7\u00c8\7\36\2")
-        buf.write("\2\u00c8\u00c9\7/\2\2\u00c9\u00ca\7\t\2\2\u00ca\u00d1")
-        buf.write("\5\f\7\2\u00cb\u00cc\7\27\2\2\u00cc\u00cd\7/\2\2\u00cd")
-        buf.write("\u00ce\7\t\2\2\u00ce\u00d0\5\f\7\2\u00cf\u00cb\3\2\2\2")
-        buf.write("\u00d0\u00d3\3\2\2\2\u00d1\u00cf\3\2\2\2\u00d1\u00d2\3")
-        buf.write("\2\2\2\u00d2\u00d4\3\2\2\2\u00d3\u00d1\3\2\2\2\u00d4\u00d5")
-        buf.write("\7\37\2\2\u00d5\u00d6\7\t\2\2\u00d6\u00d7\5\f\7\2\u00d7")
-        buf.write("\u00d8\7\23\2\2\u00d8\u00d9\5\20\t\2\u00d9\u00da\5\20")
-        buf.write("\t\5\u00da\u00de\3\2\2\2\u00db\u00dc\7\13\2\2\u00dc\u00de")
-        buf.write("\5\26\f\2\u00ddi\3\2\2\2\u00ddw\3\2\2\2\u00dd\u0086\3")
-        buf.write("\2\2\2\u00dd\u008d\3\2\2\2\u00dd\u009c\3\2\2\2\u00dd\u00a0")
-        buf.write("\3\2\2\2\u00dd\u00b0\3\2\2\2\u00dd\u00b1\3\2\2\2\u00dd")
-        buf.write("\u00b9\3\2\2\2\u00dd\u00c5\3\2\2\2\u00dd\u00db\3\2\2\2")
-        buf.write("\u00de\u00e4\3\2\2\2\u00df\u00e0\f\3\2\2\u00e0\u00e1\7")
-        buf.write("$\2\2\u00e1\u00e3\5\20\t\3\u00e2\u00df\3\2\2\2\u00e3\u00e6")
-        buf.write("\3\2\2\2\u00e4\u00e2\3\2\2\2\u00e4\u00e5\3\2\2\2\u00e5")
-        buf.write("\21\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e7\u00e8\5\24\13\2")
-        buf.write("\u00e8\u00e9\7\23\2\2\u00e9\u00eb\3\2\2\2\u00ea\u00e7")
+        buf.write("\7\"\2\2\u00a3\u00a8\5\24\13\2\u00a4\u00a5\7\27\2\2\u00a5")
+        buf.write("\u00a7\5\24\13\2\u00a6\u00a4\3\2\2\2\u00a7\u00aa\3\2\2")
+        buf.write("\2\u00a8\u00a6\3\2\2\2\u00a8\u00a9\3\2\2\2\u00a9\u00ab")
+        buf.write("\3\2\2\2\u00aa\u00a8\3\2\2\2\u00ab\u00ac\7#\2\2\u00ac")
+        buf.write("\u00ad\7\23\2\2\u00ad\u00ae\5\20\t\2\u00ae\u00af\5\20")
+        buf.write("\t\t\u00af\u00de\3\2\2\2\u00b0\u00de\7\'\2\2\u00b1\u00b2")
+        buf.write("\7\20\2\2\u00b2\u00b3\5\26\f\2\u00b3\u00b4\7\22\2\2\u00b4")
+        buf.write("\u00b7\5\20\t\2\u00b5\u00b6\7\21\2\2\u00b6\u00b8\5\20")
+        buf.write("\t\2\u00b7\u00b5\3\2\2\2\u00b7\u00b8\3\2\2\2\u00b8\u00de")
+        buf.write("\3\2\2\2\u00b9\u00ba\7\f\2\2\u00ba\u00bf\5\22\n\2\u00bb")
+        buf.write("\u00bc\7\27\2\2\u00bc\u00be\5\22\n\2\u00bd\u00bb\3\2\2")
+        buf.write("\2\u00be\u00c1\3\2\2\2\u00bf\u00bd\3\2\2\2\u00bf\u00c0")
+        buf.write("\3\2\2\2\u00c0\u00c2\3\2\2\2\u00c1\u00bf\3\2\2\2\u00c2")
+        buf.write("\u00c3\7\34\2\2\u00c3\u00c4\5\20\t\6\u00c4\u00de\3\2\2")
+        buf.write("\2\u00c5\u00c6\7\26\2\2\u00c6\u00c7\7/\2\2\u00c7\u00c8")
+        buf.write("\7\36\2\2\u00c8\u00c9\7/\2\2\u00c9\u00ca\7\t\2\2\u00ca")
+        buf.write("\u00d1\5\f\7\2\u00cb\u00cc\7\27\2\2\u00cc\u00cd\7/\2\2")
+        buf.write("\u00cd\u00ce\7\t\2\2\u00ce\u00d0\5\f\7\2\u00cf\u00cb\3")
+        buf.write("\2\2\2\u00d0\u00d3\3\2\2\2\u00d1\u00cf\3\2\2\2\u00d1\u00d2")
+        buf.write("\3\2\2\2\u00d2\u00d4\3\2\2\2\u00d3\u00d1\3\2\2\2\u00d4")
+        buf.write("\u00d5\7\37\2\2\u00d5\u00d6\7\t\2\2\u00d6\u00d7\5\f\7")
+        buf.write("\2\u00d7\u00d8\7\23\2\2\u00d8\u00d9\5\20\t\2\u00d9\u00da")
+        buf.write("\5\20\t\5\u00da\u00de\3\2\2\2\u00db\u00dc\7\13\2\2\u00dc")
+        buf.write("\u00de\5\26\f\2\u00ddi\3\2\2\2\u00ddw\3\2\2\2\u00dd\u0086")
+        buf.write("\3\2\2\2\u00dd\u008d\3\2\2\2\u00dd\u009c\3\2\2\2\u00dd")
+        buf.write("\u00a0\3\2\2\2\u00dd\u00b0\3\2\2\2\u00dd\u00b1\3\2\2\2")
+        buf.write("\u00dd\u00b9\3\2\2\2\u00dd\u00c5\3\2\2\2\u00dd\u00db\3")
+        buf.write("\2\2\2\u00de\u00e4\3\2\2\2\u00df\u00e0\f\3\2\2\u00e0\u00e1")
+        buf.write("\7$\2\2\u00e1\u00e3\5\20\t\3\u00e2\u00df\3\2\2\2\u00e3")
+        buf.write("\u00e6\3\2\2\2\u00e4\u00e2\3\2\2\2\u00e4\u00e5\3\2\2\2")
+        buf.write("\u00e5\21\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e7\u00e8\5\24")
+        buf.write("\13\2\u00e8\u00e9\7\23\2\2\u00e9\u00eb\3\2\2\2\u00ea\u00e7")
         buf.write("\3\2\2\2\u00ea\u00eb\3\2\2\2\u00eb\u00ec\3\2\2\2\u00ec")
         buf.write("\u00ed\5\26\f\2\u00ed\u00ee\7\36\2\2\u00ee\u00f3\5\26")
         buf.write("\f\2\u00ef\u00f0\7\27\2\2\u00f0\u00f2\5\26\f\2\u00f1\u00ef")
@@ -1096,13 +1096,16 @@ class pisteParser ( Parser ):
 
         def DEF(self):
             return self.getToken(pisteParser.DEF, 0)
-        def IDENTIFIER(self, i:int=None):
-            if i is None:
-                return self.getTokens(pisteParser.IDENTIFIER)
-            else:
-                return self.getToken(pisteParser.IDENTIFIER, i)
+        def IDENTIFIER(self):
+            return self.getToken(pisteParser.IDENTIFIER, 0)
         def SQUARE_LEFT(self):
             return self.getToken(pisteParser.SQUARE_LEFT, 0)
+        def identifier_with_type(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(pisteParser.Identifier_with_typeContext)
+            else:
+                return self.getTypedRuleContext(pisteParser.Identifier_with_typeContext,i)
+
         def SQUARE_RIGHT(self):
             return self.getToken(pisteParser.SQUARE_RIGHT, 0)
         def EQ(self):
@@ -1424,7 +1427,7 @@ class pisteParser ( Parser ):
                 self.state = 160
                 self.match(pisteParser.SQUARE_LEFT)
                 self.state = 161
-                self.match(pisteParser.IDENTIFIER)
+                self.identifier_with_type()
                 self.state = 166
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -1432,7 +1435,7 @@ class pisteParser ( Parser ):
                     self.state = 162
                     self.match(pisteParser.COMMA)
                     self.state = 163
-                    self.match(pisteParser.IDENTIFIER)
+                    self.identifier_with_type()
                     self.state = 168
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)

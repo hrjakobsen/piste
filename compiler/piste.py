@@ -52,7 +52,7 @@ def import_file(name, executable_path):
     file_path = find_file(name, executable_path)
     _ast, decls, imports = parse_file(file_path)
     for imp in imports:
-        decls = import_file(imp) + decls
+        decls = import_file(imp, executable_path) + decls
     return decls
 
 
