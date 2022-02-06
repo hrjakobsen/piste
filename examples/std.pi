@@ -3,3 +3,7 @@ extern piste_int_to_string(int) : string bound to int_to_string
 
 def Print[x : string ] =
     let _ : void = print(x) in skip
+
+def PrintNumber[x : int] =
+    let stringified_number : string = int_to_string(x),
+        _ : void = print(stringified_number) in skip

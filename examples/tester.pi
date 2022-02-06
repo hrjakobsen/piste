@@ -1,3 +1,4 @@
 import "std.pi"
 
-Print!["test"]
+Print!["test"] |
+PrintNumber![23]
