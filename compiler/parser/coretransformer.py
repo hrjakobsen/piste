@@ -122,6 +122,8 @@ class CoreBuilder(pisteVisitor):
         body = ctx.body.accept(self)
         name = Identifier(ctx.IDENTIFIER().getText())
         args = [i.accept(self) for i in ctx.identifier_with_type()]
+        arg_types = list(map(lambda x: x.type, args))
+        name.type = ChannelType(MessageType(arg_types))
         decl = ProcessDeclaration(
             name, args, body
         )
