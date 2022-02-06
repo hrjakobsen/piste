@@ -20,16 +20,8 @@ def add_decls(ast, decls):
         return ast
     decl = decls[0]
     decls = decls[1:]
-    if not isinstance(decl, ExternalDeclaration):
-        raise Exception("Declaration type unsupported")
     following = add_decls(ast, decls)
-    extended = ExternProcessNode(
-        decl.external_name,
-        decl.arg_types,
-        decl.ret_type,
-        decl.internal_name,
-        following
-    )
+    extended = decl.wrap(following)
     return extended
 
 

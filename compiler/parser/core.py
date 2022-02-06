@@ -204,6 +204,34 @@ class ExternalDeclaration:
         self.ret_type = ret_type
         self.internal_name = internal_name
 
+    def wrap(self, continuation):
+        extended = ExternProcessNode(
+            self.external_name,
+            self.arg_types,
+            self.ret_type,
+            self.internal_name,
+            continuation
+        )
+        return extended
+
+
+class ProcessDeclaration:
+    def __init__(self, name, args, body):
+        self.name = name
+        self.args = args
+        self.body = body
+
+    def wrap(self, continuation):
+        arg_types = list(map(lambda x: x.type, self.args))
+        return RestrictionProcessNode(
+            self.name,
+            ChannelType(MessageType(arg_types)),
+            ParallelProcessNode(
+                ReplicatedInputProcessNode(IdentifierValueNode(self.name.name), self.args, self.body),
+                continuation
+            )
+        )
+
 
 class Type:
     INT = None

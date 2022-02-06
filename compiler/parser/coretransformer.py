@@ -118,6 +118,16 @@ class CoreBuilder(pisteVisitor):
         self.declarations[internal_name] = decl
         return decl
 
+    def visitProcess_declaration(self, ctx: pisteParser.Process_declarationContext):
+        body = ctx.body.accept(self)
+        name = Identifier(ctx.IDENTIFIER().getText())
+        args = [i.accept(self) for i in ctx.identifier_with_type()]
+        decl = ProcessDeclaration(
+            name, args, body
+        )
+        self.declarations[name] = decl
+        return decl
+
     def visitLet_binding(self, ctx: pisteParser.Let_bindingContext):
         bindings = []
         for binding in ctx.value_binding():

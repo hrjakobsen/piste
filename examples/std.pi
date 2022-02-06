@@ -1,2 +1,5 @@
-extern piste_print(string) : void bound to print_internal
+extern piste_print(string) : void bound to print
 extern piste_int_to_string(int) : string bound to int_to_string
+
+def Print[x : string ] =
+    let _ : void = print(x) in skip

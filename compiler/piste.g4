@@ -5,7 +5,13 @@ program: import_statement* declaration* process?;
 import_statement: IMPORT STRING;
 
 declaration: record_declaration
+           | process_declaration
            | extern_declaration;
+
+
+process_declaration:
+    DEF IDENTIFIER SQUARE_LEFT identifier_with_type (COMMA identifier_with_type)* SQUARE_RIGHT EQ body=process;
+
 
 extern_declaration:
     EXTERN IDENTIFIER PAREN_LEFT type_name (COMMA type_name)* PAREN_RIGHT COLON type_name BOUND TO IDENTIFIER;
