@@ -151,7 +151,6 @@ int main(int argc, char** argv) {
             unblock_processes();
         }
     }
-    printf("done");
 }
 
 void spawn_readers() {
