@@ -1,4 +1,6 @@
-import "std.pi"
+import "std"
+import "random"
 
-Print!["test"] |
-PrintNumber![23]
+let _ : void = seed(12389),
+    num : int = random_int() in
+    PrintNumber![num]

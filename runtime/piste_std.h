@@ -10,5 +10,8 @@
 piste_value piste_print(piste_value val);
 piste_value piste_add(piste_value, piste_value);
 piste_value piste_int_to_string(piste_value);
+piste_value piste_random_random();
+piste_value piste_random_seed(piste_value);
+
 
 #endif //PISTE_PISTE_STD_H

@@ -8,11 +8,13 @@ import sys
 import tempfile
 from pathlib import Path
 from os.path import abspath, exists, realpath, dirname, join
+import os
 
 from printer import PrinterVisitor
 from typechecker import TypeCheckerVisitor
 
 PISTE_PATH = Path.home().joinpath(".piste")
+PISTE_STD_LIB_PATH = os.getenv("PISTE_STD_LIB_PATH") or Path.home().joinpath(".piste").joinpath("lib")
 
 
 def add_decls(ast, decls):
@@ -30,6 +32,7 @@ def find_file(name, executable_path):
         name += ".pi"
     search_paths = [
         dirname(realpath(executable_path)),
+        abspath(PISTE_STD_LIB_PATH),
         join(PISTE_PATH, "lib")
     ]
 

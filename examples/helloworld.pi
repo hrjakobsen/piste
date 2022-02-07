@@ -1,4 +1,3 @@
 import "std.pi"
 
-let _ : void = print("Hello world") in
-    skip
+Print!["Hello world"]

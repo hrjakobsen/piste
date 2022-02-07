@@ -1,0 +1,5 @@
+extern piste_random_seed(int) : void bound to seed
+extern piste_random_random() : int bound to random_int
+
+def Seed[s : int] =
+    let _ : void = seed(s) in skip

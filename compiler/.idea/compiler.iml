@@ -9,6 +9,9 @@
     <content url="file://$MODULE_DIR$/../examples">
       <sourceFolder url="file://$MODULE_DIR$/../examples" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/../std">
+      <sourceFolder url="file://$MODULE_DIR$/../std" isTestSource="false" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

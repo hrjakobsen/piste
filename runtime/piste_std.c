@@ -4,6 +4,7 @@
 #include "piste_std.h"
 #include <stdio.h>
 #include <malloc.h>
+#include <stdlib.h>
 
 piste_value piste_print(piste_value val) {
     switch (val.type) {
@@ -39,4 +40,16 @@ piste_value piste_int_to_string(piste_value number) {
     char* buf = (char*)malloc(16);
     sprintf(buf, "%ld", number.value);
     return (piste_value) {.type = STRING, .value = (piste_int_t) buf};
+}
+
+
+piste_value piste_random_random() {
+    return (piste_value){
+        .type = INT,
+        .value = rand()
+    };
+}
+
+piste_value piste_random_seed(piste_value seed) {
+    srand(seed.value);
 }

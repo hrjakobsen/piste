@@ -10,11 +10,11 @@ declaration: record_declaration
 
 
 process_declaration:
-    DEF IDENTIFIER SQUARE_LEFT identifier_with_type (COMMA identifier_with_type)* SQUARE_RIGHT EQ body=process;
+    DEF IDENTIFIER SQUARE_LEFT (identifier_with_type (COMMA identifier_with_type)*)? SQUARE_RIGHT EQ body=process;
 
 
 extern_declaration:
-    EXTERN IDENTIFIER PAREN_LEFT type_name (COMMA type_name)* PAREN_RIGHT COLON type_name BOUND TO IDENTIFIER;
+    EXTERN IDENTIFIER PAREN_LEFT (type_name (COMMA type_name)*)? PAREN_RIGHT COLON type_name BOUND TO IDENTIFIER;
 
 
 record_declaration: RECORD IDENTIFIER BRACE_LEFT IDENTIFIER COLON type_name (COMMA IDENTIFIER COLON type_name)* BRACE_RIGHT;
@@ -37,11 +37,11 @@ process: receiver=expression SEND SQUARE_LEFT expression (COMMA expression)* SQU
        | INACTION #inaction
        | IF expression THEN true_branch=process (ELSE false_branch=process)? #conditional
        | LET value_binding (COMMA value_binding)* IN process #let_binding
-       | FUN IDENTIFIER PAREN_LEFT IDENTIFIER COLON type_name (COMMA IDENTIFIER COLON type_name)* PAREN_RIGHT COLON type_name EQ body=process continuation=process #function_def
+       | FUN IDENTIFIER PAREN_LEFT (IDENTIFIER COLON type_name (COMMA IDENTIFIER COLON type_name)*)? PAREN_RIGHT COLON type_name EQ body=process continuation=process #function_def
        | RETURN expression #return
        | <assoc=right> left=process PARALLEL right=process #parallel;
 
-value_binding: (identifier_with_type EQ ) ? expression PAREN_LEFT expression (COMMA expression)*  PAREN_RIGHT #call_binding
+value_binding: (identifier_with_type EQ ) ? expression PAREN_LEFT (expression (COMMA expression)*)?  PAREN_RIGHT #call_binding
              | identifier_with_type EQ expression  #simple_value_binding;
 
 identifier_with_type : IDENTIFIER (COLON type_name)?;
