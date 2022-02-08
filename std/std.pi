@@ -7,3 +7,6 @@ def Print[x : string ] =
 def PrintNumber[x : int] =
     let stringified_number : string = int_to_string(x),
         _ : void = print(stringified_number) in skip
+
+def PrintBool[x : bool] =
+    if x then Print!["true"] else Print!["false"]

@@ -368,6 +368,7 @@ class AstVisitor:
         return node.continuation.accept(self)
 
     def visit_conditional_node(self, node: ConditionalNode):
+        node.predicate.accept(self)
         node.true_branch.accept(self)
         return node.false_branch.accept(self)
 
