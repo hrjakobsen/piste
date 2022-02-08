@@ -59,7 +59,7 @@ class PrinterVisitor(AstVisitor):
         initial_indent = self.indent()
         self.indentation += 1
 
-        s = "{3}if ({0}) {{ \n{1}\n }} else {{ \n{2} \n}}".format(node.predicate.accept(self),
+        s = "{3}if {0} then\n{1}\n{3}else \n{2} \n{3}".format(node.predicate.accept(self),
                                                                   node.true_branch.accept(self),
                                                                   node.false_branch.accept(self),
                                                                   initial_indent)
