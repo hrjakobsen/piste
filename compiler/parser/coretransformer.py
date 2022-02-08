@@ -242,6 +242,22 @@ class CoreBuilder(pisteVisitor):
             code_position=get_node_pos(ctx)
         )
 
+    def visitOperator_ao_expr(self, ctx: pisteParser.Operator_ao_exprContext):
+        return BinaryExpressionNode(
+            ctx.expression(0).accept(self),
+            ctx.expression(1).accept(self),
+            BinaryExpressionNode.AND if ctx.AND() else BinaryExpressionNode.OR,
+            code_position=get_node_pos(ctx)
+        )
+
+    def visitOperator_en_expr(self, ctx: pisteParser.Operator_en_exprContext):
+        return BinaryExpressionNode(
+            ctx.expression(0).accept(self),
+            ctx.expression(1).accept(self),
+            BinaryExpressionNode.EQ if ctx.EQEQ() else BinaryExpressionNode.NEQ,
+            code_position=get_node_pos(ctx)
+        )
+
     def visitLiteral(self, ctx: pisteParser.LiteralContext):
         return ctx.value().accept(self)
 

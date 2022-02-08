@@ -159,6 +159,11 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#operator_ao_expr.
+    def visitOperator_ao_expr(self, ctx:pisteParser.Operator_ao_exprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#operator_as_expr.
     def visitOperator_as_expr(self, ctx:pisteParser.Operator_as_exprContext):
         return self.visitChildren(ctx)
@@ -166,6 +171,11 @@ class pisteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by pisteParser#operator_md_expr.
     def visitOperator_md_expr(self, ctx:pisteParser.Operator_md_exprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by pisteParser#operator_en_expr.
+    def visitOperator_en_expr(self, ctx:pisteParser.Operator_en_exprContext):
         return self.visitChildren(ctx)
 
 

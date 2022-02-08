@@ -51,6 +51,8 @@ expression: PAREN_LEFT expression PAREN_RIGHT #paren_expr
           | expression POW expression #operator_pow_expr
           | expression (MULT|DIV) expression #operator_md_expr
           | expression (ADD|SUB) expression #operator_as_expr
+          | expression (EQEQ|NEQ) expression #operator_en_expr
+          | expression (AND|OR) expression #operator_ao_expr
         //| expression COLON IDENTIFIER DOT IDENTIFIER #path_val
           ;
 
@@ -69,6 +71,10 @@ MULT: '*';
 DIV: '/';
 ADD: '+';
 SUB: '-';
+EQEQ: '==';
+NEQ: '!=';
+AND: '&&';
+OR: '||';
 COLON: ':';
 AS : 'as';
 RETURN: 'return';

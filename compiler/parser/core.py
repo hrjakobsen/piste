@@ -23,6 +23,10 @@ class ValueNode(ExpressionNode):
 
 class BinaryExpressionNode(ExpressionNode):
     ADDITION = '+'
+    EQ = '=='
+    NEQ = '!='
+    AND = '&&'
+    OR = '||'
     SUBTRACTION = '-'
     MULTIPLICATION = '*'
     DIVISION = '/'

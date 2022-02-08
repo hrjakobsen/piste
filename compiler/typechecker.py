@@ -123,21 +123,27 @@ class TypeCheckerVisitor(AstVisitor):
     def visit_binary_expression_node(self, node: BinaryExpressionNode):
         node.left.accept(self)
         node.right.accept(self)
-        int_to_int = {
-            BinaryExpressionNode.POWER,
-            BinaryExpressionNode.MULTIPLICATION,
-            BinaryExpressionNode.DIVISION,
-            BinaryExpressionNode.SUBTRACTION,
-            BinaryExpressionNode.ADDITION
+        types = {
+            BinaryExpressionNode.POWER: [Type.INT, Type.INT, Type.INT],
+            BinaryExpressionNode.MULTIPLICATION: [Type.INT, Type.INT, Type.INT],
+            BinaryExpressionNode.DIVISION: [Type.INT, Type.INT, Type.INT],
+            BinaryExpressionNode.SUBTRACTION: [Type.INT, Type.INT, Type.INT],
+            BinaryExpressionNode.ADDITION: [Type.INT, Type.INT, Type.INT],
+            BinaryExpressionNode.EQ: [Type.INT, Type.INT, Type.BOOL],
+            BinaryExpressionNode.NEQ: [Type.INT, Type.INT, Type.BOOL],
+            BinaryExpressionNode.AND: [Type.BOOL, Type.BOOL, Type.BOOL],
+            BinaryExpressionNode.OR: [Type.BOOL, Type.BOOL, Type.BOOL],
         }
-        if node.operation in int_to_int:
-            if node.left.type != Type.INT:
-                raise WrongTypeException(Type.INT, node.left.type, node.left)
-            if node.right.type != Type.INT:
-                raise WrongTypeException(Type.INT, node.right.type, node.right)
-            node.type = Type.INT
+
+        if node.operation in types:
+            typ = types[node.operation]
+            if node.left.type != typ[0]:
+                raise WrongTypeException(typ[0], node.left.type, node.left)
+            if node.right.type != typ[1]:
+                raise WrongTypeException(typ[1], node.right.type, node.right)
+            node.type = typ[2]
             return
-        return super().visit_binary_expression_node(node)
+        raise Exception("Invalid binary operation {}".format(node.operation))
 
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
         node.identifier.type = node.channel_type
