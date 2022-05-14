@@ -1,5 +1,6 @@
 #include "piste.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <malloc.h>
 #include <memory.h>
@@ -18,6 +19,11 @@ void spawn_readers();
 closure_t *copy_closure(struct closure *pClosure);
 
 void move_replicated_reader_to_end(replicated_reader_t *reader);
+
+void runtime_error(exit_code code) {
+    fprintf(stderr, "ERROR: %d\n", code);
+    exit(1);
+}
 
 piste_value alloc_channel() {
     piste_channel* channel_ptr = malloc(sizeof(piste_channel));
@@ -227,4 +233,75 @@ void add_replicated_reader(closure_t* closure, piste_value channel) {
 
     REPLICATED_READERS_END->next = node;
     REPLICATED_READERS_END = node;
+}
+
+piste_value alloc_list(int capacity) {
+    piste_list* list = (piste_list*) malloc(sizeof(piste_list));
+    list->num_elements = capacity;
+    list->elements = NULL;
+
+    if (capacity > 0) {
+        piste_linked_list* node = (piste_linked_list*) malloc(sizeof(piste_linked_list));
+        node->next = NULL;
+        for (int i = 1; i < capacity; i++) {
+            piste_linked_list* new_node = (piste_linked_list*) malloc(sizeof(piste_linked_list));
+            node->element = (piste_value) {.type = VOID, .value = 0};
+            new_node->next = node;
+            node = new_node;
+        }
+        list->elements = node;
+    }
+
+
+    return (piste_value) {
+            .type = LIST,
+            .value = (long)list
+    };
+}
+
+void fill_list_with_elements(piste_linked_list* node, int num_elements, piste_value* elements) {
+    for (int i = 0; i < num_elements; i++) {
+        node->element = elements[i];
+        node = node->next;
+    }
+}
+
+piste_linked_list* copy_list(piste_linked_list* source, piste_linked_list *target, int num_elements) {
+    for (; source != NULL && num_elements > 0; source = source->next, target = target->next, num_elements--) {
+        target->element = source->element;
+    }
+    return target;
+}
+
+piste_value alloc_list_with_elements(int num_elements, piste_value elements[]) {
+    piste_value list_val = alloc_list(num_elements);
+
+    piste_linked_list* node = ((piste_list*)list_val.value)->elements;
+    fill_list_with_elements(node, num_elements, elements);
+
+    return list_val;
+}
+
+piste_value list_get(piste_value list_value, piste_value index) {
+    if (((piste_list*)list_value.value)->num_elements <= index.value) {
+        runtime_error(LIST_OUT_OF_RANGE);
+    }
+    piste_linked_list* node = ((piste_list*)list_value.value)->elements;
+    for (int i = 0; i < index.value; i++) {
+        node = node->next;
+    }
+
+    return node->element;
+}
+
+piste_value append_lists(piste_value list1_val, piste_value list2_val) {
+    piste_list* list1 = (piste_list*) list1_val.value;
+    piste_list* list2 = (piste_list*) list2_val.value;
+
+    piste_value resulting_list = alloc_list(list1->num_elements + list2->num_elements);
+    piste_linked_list* target_list = ((piste_list*)resulting_list.value)->elements;
+    target_list = copy_list(list1->elements, target_list, list1->num_elements);
+    copy_list(list2->elements, target_list, list2->num_elements);
+
+    return resulting_list;
 }

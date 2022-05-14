@@ -1,6 +1,7 @@
 from parser.core import AstVisitor, RestrictionProcessNode, InputProcessNode, TrueValueNode, FalseValueNode, \
     StringValueNode, IntegerValueNode, IdentifierValueNode, OutputProcessNode, ParallelProcessNode, InactionProcessNode, \
-    ReplicatedInputProcessNode, ConditionalNode, ExternProcessNode, RecordNode, PathNode, BinaryExpressionNode
+    ReplicatedInputProcessNode, ConditionalNode, ExternProcessNode, RecordNode, PathNode, BinaryExpressionNode, \
+    ListAccessNode, ListCreationNode
 
 
 class BodyVisitor(AstVisitor):
@@ -128,6 +129,18 @@ class BodyVisitor(AstVisitor):
                 node.operation,
                 right
             )
+
+    def visit_list_creation_node(self, node: ListCreationNode):
+        capacity_required = len(node.element_expressions)
+        vals = []
+        for e_expr in node.element_expressions:
+            a = e_expr.accept(self)
+            vals.append(a)
+        return "alloc_list_with_elements({}, (piste_value[]){{ {} }})".format(
+            capacity_required, ", ".join(map(lambda e_expr: e_expr.accept(self), node.element_expressions)))
+
+    def visit_list_access_node(self, node: ListAccessNode):
+        return "list_get({}, {})".format(node.target_list.accept(self), node.index_expression.accept(self))
 
 
 class DeclarationVisitor(AstVisitor):

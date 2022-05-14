@@ -1,7 +1,7 @@
 from parser.core import AstVisitor, BinaryExpressionNode, PathNode, ExternProcessNode, ConditionalNode, \
     ReplicatedInputProcessNode, InactionProcessNode, RestrictionProcessNode, ParallelProcessNode, OutputProcessNode, \
     InputProcessNode, RecordNode, IdentifierValueNode, IntegerValueNode, StringValueNode, FalseValueNode, TrueValueNode, \
-    MessageType, ChannelType, Type
+    MessageType, ChannelType, Type, ListAccessNode, ListCreationNode, ListType
 
 
 class TypesystemException(Exception):
@@ -148,4 +148,31 @@ class TypeCheckerVisitor(AstVisitor):
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
         node.identifier.type = node.channel_type
         super().visit_restriction_process_node(node)
+
+    def visit_list_creation_node(self, node: ListCreationNode):
+        if len(node.element_expressions) == 0:
+            node.type = Type.EMPTY_LIST
+            return Type.EMPTY_LIST
+        element_types = []
+        for element_expression in node.element_expressions:
+            element_expression.accept(self)
+            element_types.append(element_expression.type)
+            if not element_types[0].is_equal_to(element_expression.type):
+                raise TypingException("Values in a list must be of the same type")
+        node.type = ListType(element_types[0])
+        return node.type
+
+    def visit_list_access_node(self, node: ListAccessNode):
+        node.target_list.accept(self)
+        list_type = node.target_list.type
+        if not isinstance(list_type, ListType):
+            raise TypingException("Accessing element in non-list type", node)
+        node.index_expression.accept(self)
+        index_type = node.index_expression.type
+        if index_type != Type.INT:
+            raise TypingException("Index must be a number", node)
+        if list_type == Type.EMPTY_LIST:
+            raise TypingException("Can't dereference empty list", node)
+        node.type = list_type.element_type
+        return list_type.element_type
 

@@ -110,6 +110,31 @@ class IdentifierValueNode(ValueNode):
         return visitor.visit_identifier_node(self)
 
 
+class ListCreationNode(ExpressionNode):
+    def __init__(self, element_expressions, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.element_expressions = element_expressions
+
+    def __str__(self):
+        "[{}]".format(", ".join(map(str, self.element_expressions)))
+
+    def accept(self, visitor):
+        return visitor.visit_list_creation_node(self)
+
+
+class ListAccessNode(ExpressionNode):
+    def __init__(self, target_list, index_expression, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.target_list = target_list
+        self.index_expression = index_expression
+
+    def __str__(self):
+        "{}[{}]".format(self.target_list, self.index_expression)
+
+    def accept(self, visitor):
+        return visitor.visit_list_access_node(self)
+
+
 class ConditionalNode(AstNode):
     def __init__(self, predicate, true_branch, false_branch, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -242,6 +267,7 @@ class Type:
     BOOL = None
     STRING = None
     VOID = None
+    EMPTY_LIST = None
 
     def is_equal_to(self, other_type):
         return self == other_type
@@ -318,10 +344,23 @@ class RecordType(Type):
         return "record[{}]".format(self.name)
 
 
+class ListType(Type):
+    def __init__(self, element_type):
+        self.element_type = element_type
+
+    def __str__(self):
+        return "{}[]".format(self.element_type)
+
+    def is_equal_to(self, other_type):
+        is_other_list = isinstance(other_type, ListType)
+        return is_other_list and other_type.element_type.is_equal_to(self.element_type)
+
+
 Type.INT = IntegerType()
 Type.BOOL = BoolType()
 Type.STRING = StringType()
 Type.VOID = VoidType()
+Type.EMPTY_LIST = ListType(None)
 
 
 class AstVisitor:
@@ -382,3 +421,13 @@ class AstVisitor:
     def visit_binary_expression_node(self, node: BinaryExpressionNode):
         node.left.accept(self)
         return node.right.accept(self)
+
+    def visit_list_creation_node(self, node: ListCreationNode):
+        last = None
+        for element_expression in node.element_expressions:
+            last = element_expression.accept(self)
+        return last
+
+    def visit_list_access_node(self, node: ListAccessNode):
+        node.target_list.accept(self)
+        return node.index_expression.accept(self)

@@ -24,7 +24,8 @@ type_name: INT_T #type_int
          | VOID_T #type_void
          | STRING_T #type_string
          | CARET message_type #type_channel
-         | IDENTIFIER #type_identifier;
+         | IDENTIFIER #type_identifier
+         | type_name SQUARE_LEFT SQUARE_RIGHT #type_list;
 
 message_type: SQUARE_LEFT type_name (COMMA type_name)* SQUARE_RIGHT;
 
@@ -47,6 +48,8 @@ value_binding: (identifier_with_type EQ ) ? expression PAREN_LEFT (expression (C
 identifier_with_type : IDENTIFIER (COLON type_name)?;
 
 expression: PAREN_LEFT expression PAREN_RIGHT #paren_expr
+          | expression SQUARE_LEFT expression SQUARE_RIGHT #list_access
+          | SQUARE_LEFT (expression (COMMA expression)*)? SQUARE_RIGHT # list_creation
           | value #literal
           | expression POW expression #operator_pow_expr
           | expression (MULT|DIV) expression #operator_md_expr

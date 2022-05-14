@@ -317,7 +317,12 @@ class CoreBuilder(pisteVisitor):
             id.type = ctx.type_name().accept(self)
         return id
 
+    def visitType_list(self, ctx: pisteParser.Type_listContext):
+        return ListType(ctx.type_name().accept(self))
 
+    def visitList_creation(self, ctx: pisteParser.List_creationContext):
+        return ListCreationNode(list(map(lambda expr: expr.accept(self), ctx.expression())))
 
-
+    def visitList_access(self, ctx: pisteParser.List_accessContext):
+        return ListAccessNode(ctx.expression(0).accept(self), ctx.expression(1).accept(self))
 

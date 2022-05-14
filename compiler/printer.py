@@ -1,6 +1,7 @@
 from parser.core import AstVisitor, RestrictionProcessNode, InputProcessNode, TrueValueNode, FalseValueNode, \
     StringValueNode, IntegerValueNode, IdentifierValueNode, OutputProcessNode, ParallelProcessNode, InactionProcessNode, \
-    ReplicatedInputProcessNode, ConditionalNode, ExternProcessNode, RecordNode, PathNode, BinaryExpressionNode
+    ReplicatedInputProcessNode, ConditionalNode, ExternProcessNode, RecordNode, PathNode, BinaryExpressionNode, \
+    ListAccessNode, ListCreationNode
 
 
 class PrinterVisitor(AstVisitor):
@@ -93,6 +94,12 @@ class PrinterVisitor(AstVisitor):
             node.operation,
             node.right.accept(self)
         )
+
+    def visit_list_creation_node(self, node: ListCreationNode):
+        return "[{}]".format(", ".join(map(lambda e: e.accept(self), node.element_expressions)))
+
+    def visit_list_access_node(self, node: ListAccessNode):
+        return "{}[{}]".format(node.target_list.accept(self), node.index_expression.accept(self))
 
     def print_list(self, lst):
         return "[" + ", ".join(lst) + "]"

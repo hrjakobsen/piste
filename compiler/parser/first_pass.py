@@ -166,6 +166,18 @@ class FreeVariableVisitor(AstVisitor):
         node.free_variables = self.sort(set(node.left.accept(self)) | set(node.right.accept(self)))
         return node.free_variables
 
+    def visit_list_creation_node(self, node: ListCreationNode):
+        frees = set()
+        for expr in node.element_expressions:
+            free_vars = expr.accept(self)
+            frees |= set(free_vars)
+        node.free_variables = self.sort(list(frees))
+        return node.free_variables
+
+    def visit_list_access_node(self, node: ListAccessNode):
+        node.free_variables = self.sort(set(node.target_list.accept(self)) | set(node.index_expression.accept(self)))
+        return node.free_variables
+
     def sort(self, set_of_fv):
         return list(sorted(set_of_fv))
 

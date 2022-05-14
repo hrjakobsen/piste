@@ -12,6 +12,7 @@ enum piste_value_t {
     STRING,
     RECORD,
     VOID,
+    LIST,
 };
 
 typedef enum piste_value_t piste_value_t;
@@ -41,6 +42,20 @@ struct piste_channel {
 };
 
 typedef struct piste_channel piste_channel;
+
+struct piste_linked_list {
+    struct piste_linked_list* next;
+    piste_value element;
+};
+
+typedef struct piste_linked_list piste_linked_list;
+
+struct piste_list {
+    size_t num_elements;
+    piste_linked_list* elements;
+};
+
+typedef struct piste_list piste_list;
 
 struct closure;
 
@@ -78,6 +93,14 @@ piste_value alloc_channel();
 closure_t* alloc_closure(proc_t, size_t num_free_variables, piste_value* free_variables);
 void queue_process(closure_t* closure);
 void add_replicated_reader(closure_t*, piste_value);
+piste_value list_get(piste_value list_value, piste_value index);
+piste_value alloc_list_with_elements(int, piste_value elements[]);
 
+
+enum exit_code {
+    LIST_OUT_OF_RANGE = 0
+};
+
+typedef enum exit_code exit_code;
 
 #endif //PISTE_PISTE_H

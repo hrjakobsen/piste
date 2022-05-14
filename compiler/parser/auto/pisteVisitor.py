@@ -1,4 +1,4 @@
-# Generated from /home/mathias/gitrepos/piste/compiler/piste.g4 by ANTLR 4.9.2
+# Generated from piste.g4 by ANTLR 4.9.3
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .pisteParser import pisteParser
@@ -39,8 +39,13 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by pisteParser#type_int.
-    def visitType_int(self, ctx:pisteParser.Type_intContext):
+    # Visit a parse tree produced by pisteParser#type_string.
+    def visitType_string(self, ctx:pisteParser.Type_stringContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by pisteParser#type_list.
+    def visitType_list(self, ctx:pisteParser.Type_listContext):
         return self.visitChildren(ctx)
 
 
@@ -54,11 +59,6 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by pisteParser#type_string.
-    def visitType_string(self, ctx:pisteParser.Type_stringContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by pisteParser#type_channel.
     def visitType_channel(self, ctx:pisteParser.Type_channelContext):
         return self.visitChildren(ctx)
@@ -66,6 +66,11 @@ class pisteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by pisteParser#type_identifier.
     def visitType_identifier(self, ctx:pisteParser.Type_identifierContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by pisteParser#type_int.
+    def visitType_int(self, ctx:pisteParser.Type_intContext):
         return self.visitChildren(ctx)
 
 
@@ -169,6 +174,11 @@ class pisteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by pisteParser#list_creation.
+    def visitList_creation(self, ctx:pisteParser.List_creationContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by pisteParser#operator_md_expr.
     def visitOperator_md_expr(self, ctx:pisteParser.Operator_md_exprContext):
         return self.visitChildren(ctx)
@@ -176,6 +186,11 @@ class pisteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by pisteParser#operator_en_expr.
     def visitOperator_en_expr(self, ctx:pisteParser.Operator_en_exprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by pisteParser#list_access.
+    def visitList_access(self, ctx:pisteParser.List_accessContext):
         return self.visitChildren(ctx)
 
 
