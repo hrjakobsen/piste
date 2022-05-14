@@ -95,6 +95,7 @@ void queue_process(closure_t* closure);
 void add_replicated_reader(closure_t*, piste_value);
 piste_value list_get(piste_value list_value, piste_value index);
 piste_value alloc_list_with_elements(int, piste_value elements[]);
+piste_value append_lists(piste_value, piste_value);
 
 
 enum exit_code {

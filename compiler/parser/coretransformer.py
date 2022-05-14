@@ -326,3 +326,10 @@ class CoreBuilder(pisteVisitor):
     def visitList_access(self, ctx: pisteParser.List_accessContext):
         return ListAccessNode(ctx.expression(0).accept(self), ctx.expression(1).accept(self))
 
+    def visitOperator_append_expr(self, ctx: pisteParser.Operator_append_exprContext):
+        return BinaryExpressionNode(
+            ctx.expression(0).accept(self),
+            ctx.expression(1).accept(self),
+            BinaryExpressionNode.APPEND,
+            get_node_pos(ctx)
+        )

@@ -29,6 +29,7 @@ class BinaryExpressionNode(ExpressionNode):
     OR = '||'
     SUBTRACTION = '-'
     MULTIPLICATION = '*'
+    APPEND = '++'
     DIVISION = '/'
     POWER = '**'
 

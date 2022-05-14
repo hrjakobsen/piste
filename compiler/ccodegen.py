@@ -123,6 +123,8 @@ class BodyVisitor(AstVisitor):
         right = node.right.accept(self)
         if node.operation == BinaryExpressionNode.POWER:
             return "((piste_value){{ .type = INT, .value = (pow(({}).value, ({}).value))}})".format(left, right)
+        if node.operation == BinaryExpressionNode.APPEND:
+            return "append_lists({}, {})".format(left, right)
         else:
             return "((piste_value){{ .type = INT, .value = (({}).value {} ({}).value)}})".format(
                 left,

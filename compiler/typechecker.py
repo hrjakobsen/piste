@@ -143,6 +143,13 @@ class TypeCheckerVisitor(AstVisitor):
                 raise WrongTypeException(typ[1], node.right.type, node.right)
             node.type = typ[2]
             return
+        elif node.operation == BinaryExpressionNode.APPEND:
+            if not isinstance(node.left.type, ListType):
+                raise TypingException("Left operand of ++ must be a list", node.left)
+            if not node.left.type.is_equal_to(node.right.type):
+                raise WrongTypeException(node.left.type, node.right.type, node)
+            node.type = node.left.type
+            return
         raise Exception("Invalid binary operation {}".format(node.operation))
 
     def visit_restriction_process_node(self, node: RestrictionProcessNode):
